@@ -18,12 +18,21 @@ namespace PosTicket.ViewModel
         private WriteConfig writeConfig { get; set; }
         private ReadPrinter readPrinter { get; set; }
         public ICommand SaveConfigCommand { get; set; }
+        public ICommand CloseWindowCommand { get; set; }
 
         public ReadConfigViewModel()
         {
-            SaveConfigCommand = new RelayCommand(o => SaveConfigClick("SaveConfigCommandButton"));
+            SaveConfigCommand = new RelayCommand(SaveConfigClick);
             readConfig = new ReadConfig();
             readPrinter = new ReadPrinter();
+        }
+        private void CloseWindow(object sender)
+        {
+            Window winObj = (Window)sender;
+            if (winObj != null)
+            {
+                winObj.Close();
+            }
         }
         private string _serverURLValue;
         public string ServerURLValue
@@ -160,7 +169,7 @@ namespace PosTicket.ViewModel
             writeConfig.UpdateConfigByField(updatedConfig[2], SelectedTicketPrinter);
             writeConfig.UpdateConfigByField(updatedConfig[3], IpAddressValue);
             ShowLoginWindow();
-            CloseAction();
+            CloseWindow(sender);
         }
     }
 }
