@@ -19,7 +19,7 @@ namespace PosTicket.Models
                 ticket_printer = "ZDesigner GT800 (EPL)",
                 current_ip = "127.0.0.1",
                 api_key = "654321",
-                session_data = "abc"
+                session_data = null
             };
             newConfigs.Add(newConfig);
             Repository.AddConfigs(newConfigs);

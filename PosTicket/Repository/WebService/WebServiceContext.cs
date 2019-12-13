@@ -18,28 +18,48 @@ namespace PosTicket.Repository.WebService
         }
         public static RestRequest GetRequestBody(string method)
         {
-            ReadSession readSession = new ReadSession();
-            Session _sessionData = readSession.GetSession();
-            string token = _sessionData.token;
-            if (method == "post")
+            ReadConfig readConfig = new ReadConfig();
+            List<Config> _config = readConfig.GetAllConfigs();
+            if(_config[0].session_data!="")
             {
-                var request = new RestRequest(Method.POST);
-                request.AddHeader("Content-Type", "application/json");
-                if(token != null)
+                ReadSession readSession = new ReadSession();
+                Session _sessionData = readSession.GetSession();
+                string token = _sessionData.token;
+                if (method == "post")
                 {
-                    request.AddHeader("Authorization", "Bearer "+ token);
+                    var request = new RestRequest(Method.POST);
+                    request.AddHeader("Content-Type", "application/json");
+                    if (token != null)
+                    {
+                        request.AddHeader("Authorization", "Bearer " + token);
+                    }
+                    return request;
                 }
-                return request;
+                else
+                {
+                    var request = new RestRequest(Method.GET);
+                    request.AddHeader("Content-Type", "application/json");
+                    if (token != null)
+                    {
+                        request.AddHeader("Authorization", "Bearer " + token);
+                    }
+                    return request;
+                }
             }
             else
             {
-                var request = new RestRequest(Method.GET);
-                request.AddHeader("Content-Type", "application/json");
-                if (token != null)
+                if (method == "post")
                 {
-                    request.AddHeader("Authorization", "Bearer " + token);
+                    var request = new RestRequest(Method.POST);
+                    request.AddHeader("Content-Type", "application/json");
+                    return request;
                 }
-                return request;
+                else
+                {
+                    var request = new RestRequest(Method.GET);
+                    request.AddHeader("Content-Type", "application/json");
+                    return request;
+                }
             }
         }
     }

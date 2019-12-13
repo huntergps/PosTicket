@@ -76,9 +76,8 @@ namespace PosTicket.ViewModel
         public void AddToPayCart(PayCart sender)
         {
             int lastrow = BayarList.Count-1;
-            
-            PayCart temp = new PayCart();
-            temp = BayarList.Last();
+            PayCart temp = BayarList.Last();
+            temp.id = sender.id;
             temp.typebayar = sender.reff;
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
@@ -417,7 +416,7 @@ namespace PosTicket.ViewModel
             }
             paymentTransactionRequest.data = new PaymentTransactionRequestData { 
                 pos_ip = IpAddressValue,
-                date_plan = DateTime.Now.ToString("YYYY-MM-DD"),
+                date_plan = DateTime.Now.ToString("yyyy-MM-dd"),
                 line_ids = lineTransaksi,
                 payment_ids = linePayment
             };
