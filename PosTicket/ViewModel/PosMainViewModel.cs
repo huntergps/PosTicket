@@ -23,6 +23,7 @@ namespace PosTicket.ViewModel
         public ICommand DelCommand { get; set; }
         public ICommand PaymentCommand { get; set; }
         public ICommand ClosePaymentCommand { get; set; }
+        public ICommand ValidatePaymentCommand { get; set; }
         private ReadConfig readConfig { get; set; }
         private ReadProductResponse readProduct { get; set; }
         private ReadPaymentResponse readPayment { get; set; }
@@ -41,6 +42,7 @@ namespace PosTicket.ViewModel
             KeypadCommand = new RelayCommand(UpdateCartQty);
             KeyPayCommand = new RelayCommand(UpdatePayCartBayar);
             DelCommand = new RelayCommand(DelCartQty);
+            ValidatePaymentCommand = new RelayCommand(SendPaymentData);
             readConfig = new ReadConfig();
             readProduct = new ReadProductResponse();
             readPayment = new ReadPaymentResponse();
@@ -360,7 +362,13 @@ namespace PosTicket.ViewModel
                     if(productCategoryData.id == productData.category_id)
                     {
                         if(productData.AddToCartCommand == null)
-                            productData.AddToCartCommand = new RelayCommand(o => AddToCart(new Cart { id = productData.id, name = productData.name, qty = 1, price = productData.price }));
+                            productData.AddToCartCommand = new RelayCommand(o => AddToCart(new Cart {
+                                id = productData.id, 
+                                name = productData.name, 
+                                qty = 1, 
+                                price = productData.price,
+                                product_price_id = productData.product_price_id
+                            }));
                         if (productCategoryData.products == null) productCategoryData.products = new List<ProductData>();
                         productCategoryData.products.Add(productData);
                     }
@@ -378,6 +386,50 @@ namespace PosTicket.ViewModel
             LoadProduct();
             IpAddressValue = ConfigList[0].current_ip;
             PosSessionCloseData = new PosSessionCloseRequest { data = new PosSessionCloseRequestData { pos_ip = IpAddressValue } };
+        }
+        private async void SendPaymentData(object sender)
+        {
+            PaymentTransactionRequest paymentTransactionRequest = new PaymentTransactionRequest();
+
+            List<PaymentTransactionLineData> lineTransaksi = new List<PaymentTransactionLineData>();
+            foreach(Cart transactionLine in CartList)
+            {
+                lineTransaksi.Add(new PaymentTransactionLineData {
+                    sequence = CartList.IndexOf(transactionLine) + 1,
+                    product_id = transactionLine.id,
+                    product_price_id = transactionLine.product_price_id,
+                    qty = transactionLine.qty,
+                    qty_bonus = 0,
+                    price_unit = transactionLine.price
+                });
+            }
+
+            List<PaymentTransactionPaymentData> linePayment = new List<PaymentTransactionPaymentData>();
+
+            foreach (PayCart paymentLine in BayarList)
+            {
+                linePayment.Add(new PaymentTransactionPaymentData
+                {
+                    payment_method_id = paymentLine.id,
+                    amount = paymentLine.bayar,
+                    reference = paymentLine.reff,
+                });
+            }
+            paymentTransactionRequest.data = new PaymentTransactionRequestData { 
+                pos_ip = IpAddressValue,
+                date_plan = DateTime.Now.ToString("YYYY-MM-DD"),
+                line_ids = lineTransaksi,
+                payment_ids = linePayment
+            };
+            PaymentTransactionResponse paymentResponse = await readPayment.PostTransactionPayment(paymentTransactionRequest);
+            if (paymentResponse.result.error == null)
+            {
+                //close payment window
+            }
+            else
+            {
+                MaterialMessageBox.ShowDialog(paymentResponse.result.error.message, paymentResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+            }
         }
     }
 }

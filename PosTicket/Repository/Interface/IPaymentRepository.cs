@@ -6,5 +6,6 @@ namespace PosTicket.Repository.Interface
     public interface IPaymentRepository
     {
         Task<PaymentMethod> GetPaymentMethodAsync();
+        Task<PaymentTransactionResponse> PayTransactionAsync(PaymentTransactionRequest paymentTransactionRequest);
     }
 }

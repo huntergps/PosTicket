@@ -13,5 +13,10 @@ namespace PosTicket.Models
             Repository = new PaymentRepository();
             return await Repository.GetPaymentMethodAsync();
         }
+        public async Task<PaymentTransactionResponse> PostTransactionPayment(PaymentTransactionRequest paymentTransactionRequest)
+        {
+            Repository = new PaymentRepository();
+            return await Repository.PayTransactionAsync(paymentTransactionRequest);
+        }
     }
 }
