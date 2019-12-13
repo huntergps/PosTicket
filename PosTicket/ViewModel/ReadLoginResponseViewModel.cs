@@ -18,13 +18,23 @@ namespace PosTicket.ViewModel
         private ReadConfig readConfig { get; set; }
         private ReadPosSessionResponse readPosSession { get; set; }
         public ICommand GetLoginResponseCommand { get; set; }
+        public ICommand CloseWindowCommand { get; set; }
 
         public ReadLoginResponseViewModel()
         {
             readConfig = new ReadConfig();
             readPosSession = new ReadPosSessionResponse();
-            GetLoginResponseCommand = new RelayCommand(o => GetLoginResponseClick("GetLoginResponseCommandButton"));
+            GetLoginResponseCommand = new RelayCommand(GetLoginResponseClick);
+            CloseWindowCommand = new RelayCommand(CloseWindow);
             SetDialogHostStatus("False");
+        }
+        private void CloseWindow(object sender)
+        {
+            Window winObj = (Window)sender;
+            if (winObj != null)
+            {
+                winObj.Close();
+            }
         }
         private List<Config> _configList;
 
@@ -125,15 +135,25 @@ namespace PosTicket.ViewModel
         {
             DialogHostStatus = status;
         }
-        private void ShowMainWindow()
+        private void ShowMainWindow(object sender)
         {
             ViewPosMain mainWindow = new ViewPosMain();
+            Window winObj = (Window)sender;
+            if (winObj != null)
+            {
+                winObj.Close();
+            }
             mainWindow.Show();
             CloseAction();
         }
-        private void ShowDepositWindow()
+        private void ShowDepositWindow(object sender)
         {
             ViewSetDeposit depositWindow = new ViewSetDeposit();
+            Window winObj = (Window)sender;
+            if (winObj != null)
+            {
+                winObj.Close();
+            }
             depositWindow.Show();
             CloseAction();
         }
@@ -144,14 +164,14 @@ namespace PosTicket.ViewModel
                 username = _usernameValue,
                 password = Password
             };
-            GetLoginData(_loginRequest);
+            GetLoginData(_loginRequest, sender);
             //Thread thread = new Thread(() => GetLoginData(_loginRequest));
             //thread.IsBackground = true; // Terminate process if main thread exits
             //thread.Priority = ThreadPriority.Highest;
             //thread.SetApartmentState(ApartmentState.STA);
             //thread.Start();
         }
-        private async void GetLoginData(LoginRequest _credentialValue)
+        private async void GetLoginData(LoginRequest _credentialValue, object sender)
         {
             SetDialogHostStatus("True");
             SetStatusUpdate("Logging in...");
@@ -187,11 +207,11 @@ namespace PosTicket.ViewModel
                 UsernameValue = "";
                 if (await readPosSession.GetPosSessionAsync(IpAddressValue) == null)
                 {
-                    ShowDepositWindow();
+                    ShowDepositWindow(sender);
                 }
                 else
                 {
-                    ShowMainWindow();
+                    ShowMainWindow(sender);
                 }
             }
             else

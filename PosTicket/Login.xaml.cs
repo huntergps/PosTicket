@@ -32,7 +32,7 @@ namespace PosTicket
         private void ButtonConfig_Click(object sender, RoutedEventArgs e)
         {
             Configuration cfg = new Configuration();
-            this.Hide();
+            this.Close();
             cfg.ShowDialog();
         }
         private void DialogHost_DialogOpened(object sender, DialogOpenedEventArgs eventArgs)
