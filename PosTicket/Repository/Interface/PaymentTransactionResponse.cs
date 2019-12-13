@@ -27,6 +27,6 @@ namespace PosTicket.Repository.Interface
         public int sale_id { get; set; }
         public int session_name { get; set; }
         public float qty_ticket_bonus { get; set; }
-        public PaymentTransactionResponseTicket tickets { get; set; }
+        public List<PaymentTransactionResponseTicket> tickets { get; set; }
     }
 }
