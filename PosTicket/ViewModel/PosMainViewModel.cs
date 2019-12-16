@@ -11,6 +11,7 @@ using System.Linq;
 using PosTicket.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using PosTicket.Repository.PrinterData;
 
 namespace PosTicket.ViewModel
 {
@@ -566,6 +567,17 @@ namespace PosTicket.ViewModel
             PaymentTransactionResponse paymentResponse = await readPayment.PostTransactionPayment(paymentTransactionRequest);
             if (paymentResponse.result != null || paymentResponse.error == null)
             {
+                PrinterRepository printerRepository = new PrinterRepository();
+                printerRepository.CetakReceipt(ConfigList[0].pos_printer, new Receipt
+                {
+                    line1 = "abab",
+                    line2 = "bca",
+                    line3 = "line3",
+                    line4 = "string",
+                    line5 = "line5",
+                    line6 = (char)27+"@"+ (char)27+"p"+(char)0+".}"
+                }) ;
+                await printerRepository.CetakTicket(ConfigList[0].ticket_printer, paymentResponse.result.tickets);
                 //close payment window
                 CartList.Clear();
                 paymentWindow.Hide();

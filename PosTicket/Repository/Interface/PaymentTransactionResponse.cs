@@ -10,17 +10,7 @@ namespace PosTicket.Repository.Interface
         public string version { get; set; }
         public ErrorMessage error { get; set; }
     }
-    public class PaymentTransactionResponseTicket
-    {
-        public int id { get; set; }
-        public string barcode { get; set; }
-        public string line1 { get; set; }
-        public string line2 { get; set; }
-        public string line3 { get; set; }
-        public string line4 { get; set; }
-        public string line5 { get; set; }
-        public string line6 { get; set; }
-    }
+   
     public class PaymentTransactionResponseData
     {
         public ErrorMessage error { get; set; }
@@ -28,6 +18,6 @@ namespace PosTicket.Repository.Interface
         public int sale_id { get; set; }
         public int session_name { get; set; }
         public float qty_ticket_bonus { get; set; }
-        public List<PaymentTransactionResponseTicket> tickets { get; set; }
+        public List<Ticket> tickets { get; set; }
     }
 }
