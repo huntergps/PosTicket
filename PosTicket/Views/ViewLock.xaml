@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PosTicket.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="ViewLock" Height="500" Width="350" ResizeMode="NoResize"  WindowStyle="None">
+        Title="ViewLock" Height="500" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
     <Border Padding="10">
         <Grid ClipToBounds="True">
             <Rectangle Height="280" VerticalAlignment="Top">
@@ -25,16 +25,24 @@
                 </Rectangle.Effect>
             </Rectangle>
             <Grid Width="280" Height="240" VerticalAlignment="Bottom" Margin="0,100">
-                
-                    <TextBlock Text="LOGIN" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" Foreground="Gray" FontSize="18"/>
-                    <TextBlock Text="USER NAME" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" Foreground="Gray" FontSize="18"/>
-                
-                <StackPanel VerticalAlignment="Bottom" Margin="10">
-                    <PasswordBox x:Name="txtPassword" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" Margin="0,10" FontFamily="Champagne &amp; Limousines" FontSize="18"  />
-                </StackPanel>
-            </Grid>
-            <Button VerticalAlignment="Bottom" Margin="0,85" Width="150" Content="Login" Name="LoginButton" Command="{Binding GetLoginResponseCommand}" CommandParameter="{Binding ElementName=loginWindow}" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25*"/>
+                    <RowDefinition Height="25*"/>
+                    <RowDefinition Height="25*"/>
+                    <RowDefinition Height="25*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"  Text="UNLOCK SCREEN" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" FontSize="18"/>
+                <TextBlock Grid.Row="1"  Text="USER NAME" HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="Gray" FontSize="18"/>
 
+                <StackPanel Grid.Row="2"  VerticalAlignment="Center" HorizontalAlignment="Center" Width="250">
+                    <PasswordBox x:Name="txtPassword" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" FontFamily="Champagne &amp; Limousines" FontSize="18"  />
+                </StackPanel>
+                <Button Grid.Row="3"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Unlock" Name="UnlockButton" Width="200" Height="40"  FontSize="18"/>
+            </Grid>
+
+            <Grid Width="280"  Margin="25,394,25,10">
+                <TextBlock Grid.Row="0"  Text="... POS ON UNLOCK MODE ..." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="BlueViolet" FontSize="18"/>
+            </Grid>
         </Grid>
     </Border>
 </Window>
