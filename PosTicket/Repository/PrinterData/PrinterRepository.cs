@@ -146,6 +146,18 @@ namespace PosTicket.Repository.PrinterData
             Marshal.FreeCoTaskMem(pBytes);
             return true;
         }
+        public bool CetakReceipt(string printerName, Receipt data)
+        {
+            StringBuilder label = new StringBuilder();
+            label.AppendLine(data.line1);
+            label.AppendLine(data.line2);
+            label.AppendLine(data.line3);
+            label.AppendLine(data.line4);
+            label.AppendLine(data.line5);
+            label.AppendLine(data.line6);
+            SendStringToPrinter(printerName, label.ToString());
+            return true;
+        }
         public async Task<bool> CetakTicket(string printerName, List<Ticket> data)
         {
             ConfigList = readConfig.GetAllConfigs();
