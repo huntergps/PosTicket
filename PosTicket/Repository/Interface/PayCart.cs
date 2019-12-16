@@ -8,10 +8,10 @@ namespace PosTicket.Repository.Interface
     {
         public int id { get; set; }
         public float totaljual { get; set; }
-        public float bayar { get; set; }
+        public double bayar { get; set; }
         public string reff { get; set; }
         public string typebayar { get; set; }
-        public float kembalian
+        public double kembalian
         {
             get
             {
@@ -20,5 +20,6 @@ namespace PosTicket.Repository.Interface
             set { }
         }
         public ICommand DelToPayCartCommand { get; set; }
+
     }
 }

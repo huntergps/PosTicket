@@ -60,8 +60,8 @@
                             <StackPanel>
                                 <ItemsControl ItemsSource="{Binding PaymentMethodList}" ItemTemplate="{StaticResource PaymentTemplate}" Grid.Row="0">
                                 </ItemsControl>
-                           </StackPanel>
-                         </Border>
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </Grid>
                 <Grid Grid.Column="1" >
@@ -81,10 +81,10 @@
                             </ListView.Resources>
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn DisplayMemberBinding="{Binding totaljual}" Header="Total Penjualan" Width="150" />
-                                    <GridViewColumn DisplayMemberBinding="{Binding bayar}" Header="Bayar" Width="100" />
-                                    <GridViewColumn DisplayMemberBinding="{Binding kembalian}" Header="Kembalian" Width="100" />
-                                    <GridViewColumn DisplayMemberBinding="{Binding typebayar}" Header="Tipe Bayar" Width="190" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding totaljual, StringFormat='N0'}" Header="Total Penjualan" Width="150" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding bayar, StringFormat='N0'}" Header="Bayar" Width="100" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding kembalian, StringFormat='N0'}" Header="Kembalian" Width="100" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding typebayar}" Header="Referensi Bayar" Width="190" />
                                     <GridViewColumn Header="Hapus" Width="100">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
@@ -92,6 +92,7 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
+
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -103,32 +104,45 @@
                             <ColumnDefinition Width="30*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0" >
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                            </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="25*"/>
-                                <RowDefinition Height="25*"/>
-                                <RowDefinition Height="25*"/>
-                                <RowDefinition Height="25*"/>
+                                <RowDefinition Height="80*"/>
+                                <RowDefinition Height="20*"/>
                             </Grid.RowDefinitions>
-                            <Button Content="1" Grid.Column="0" Height="80" Margin="3 5 2 2"/>
-                            <Button Content="2" Grid.Column="1" Height="80" Margin="3 5 2 2" />
-                            <Button Content="3" Grid.Column="2" Height="80" Margin="3 5 2 2"/>
-                            <Button Content="4" Grid.Row="1" Grid.Column="0" Height="80" Margin="3 2 2 2"/>
-                            <Button Content="5" Grid.Row="1" Grid.Column="1" Height="80" Margin="3 2 2 2" />
-                            <Button Content="6" Grid.Row="1" Grid.Column="2" Height="80" Margin="3 2 2 2"/>
-                            <Button Content="7" Grid.Row="2" Grid.Column="0" Height="80" Margin="3 2 2 2"/>
-                            <Button Content="8" Grid.Row="2" Grid.Column="1" Height="80" Margin="3 2 2 2" />
-                            <Button Content="9" Grid.Row="2" Grid.Column="2" Height="80" Margin="3 2 2 2"/>
-                            <Button Content="C" Grid.Row="3" Grid.Column="0" Height="80" Margin="3 2 2 2"/>
-                            <Button Content="0" Grid.Row="3" Grid.Column="1" Height="80" Margin="3 2 2 2" />
-                            <Button Grid.Row="3" Grid.Column="2" Height="80" Margin="3 2 2 2" >
-                                <materialDesign:PackIcon Kind="KeyboardBackspace" Foreground="White" Width="Auto" Height="Auto"  />
-                            </Button>
-                            
+                            <Grid Grid.Row="0" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30*"/>
+                                    <ColumnDefinition Width="30*"/>
+                                    <ColumnDefinition Width="30*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="20*"/>
+                                    <RowDefinition Height="20*"/>
+                                    <RowDefinition Height="20*"/>
+                                    <RowDefinition Height="20*"/>
+                                </Grid.RowDefinitions>
+                                <Button Content="1" Grid.Column="0" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="1"  />
+                                <Button Content="2" Grid.Column="1" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="2" />
+                                <Button Content="3" Grid.Column="2" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="3"/>
+                                <Button Content="4" Grid.Row="1" Grid.Column="0" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="4"/>
+                                <Button Content="5" Grid.Row="1" Grid.Column="1" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="5"/>
+                                <Button Content="6" Grid.Row="1" Grid.Column="2" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="6"/>
+                                <Button Content="7" Grid.Row="2" Grid.Column="0" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="7"/>
+                                <Button Content="8" Grid.Row="2" Grid.Column="1" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="8"/>
+                                <Button Content="9" Grid.Row="2" Grid.Column="2" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="9"/>
+                                <Button Content="C" Grid.Row="3" Grid.Column="0" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumClearPayCommand}"/>
+                                <Button Content="0" Grid.Row="3" Grid.Column="1" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="0"/>
+                                <Button Grid.Row="3" Grid.Column="2" Height="65" Margin="2 2 2 2" Command="{Binding NumDelPayCommand}" >
+                                    <materialDesign:PackIcon Kind="KeyboardBackspace" Foreground="White" Width="50" Height="30"  />
+                                </Button>
+                            </Grid>
+                            <Grid Grid.Row="1" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50*"/>
+                                    <ColumnDefinition Width="50*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Content="00" Grid.Column="0" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="00"/>
+                                <Button Content="000" Grid.Column="1" Height="65" Margin="2 2 2 2" FontSize="20" Command="{Binding NumPayCommand}" CommandParameter="000"/>
+                            </Grid>
                         </Grid>
                         <Grid Grid.Column="1" >
                             <Grid.RowDefinitions>
@@ -137,19 +151,19 @@
                                 <RowDefinition Height="25*"/>
                                 <RowDefinition Height="25*"/>
                             </Grid.RowDefinitions>
-                            <Button Content="100K" Grid.Row="0" Height="80" Margin="3 5 2 2" Command="{Binding KeyPayCommand}" CommandParameter="100"/>
-                            <Button Content="50K" Grid.Row="1" Height="80" Margin="3 2 2 2"/>
-                            <Button Content="10K" Grid.Row="2" Height="80" Margin="3 2 2 2"/>
-                            <Button Content="5K" Grid.Row="3" Height="80" Margin="3 2 2 2"/>
+                            <Button Content="100K" Grid.Row="0" Height="80" Margin="2 2 2 2" Command="{Binding KeyPayCommand}" CommandParameter="100"  FontSize="20"/>
+                            <Button Content="50K" Grid.Row="1" Height="80" Margin="2 2 2 2" Command="{Binding KeyPayCommand}" CommandParameter="50"  FontSize="20"/>
+                            <Button Content="10K" Grid.Row="2" Height="80" Margin="2 2 2 2" Command="{Binding KeyPayCommand}" CommandParameter="10"  FontSize="20"/>
+                            <Button Content="5K" Grid.Row="3" Height="80" Margin="2 2 2 2" Command="{Binding KeyPayCommand}" CommandParameter="5"  FontSize="20"/>
                         </Grid>
                         <Grid Grid.Column="2" >
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="30*"/>
-                                <RowDefinition Height="20*"/>
                                 <RowDefinition Height="25*"/>
+                                <RowDefinition Height="25*"/>
+                                <RowDefinition Height="50*"/>
                             </Grid.RowDefinitions>
-                            <Button Content="PELANGGAN" Grid.Row="0" Height="150" Margin="3 5 2 2"/>
-                            <Button Content="SALES" Grid.Row="1" Height="80" Margin="3 2 2 2"/>
+                            <Button Content="PELANGGAN" Grid.Row="2" Height="150" Margin="3 2 2 2"  FontSize="20"/>
+                            <Button Content="SALES" Grid.Row="1" Height="80" Margin="3 2 2 2"  FontSize="20"/>
                         </Grid>
                     </Grid>
                 </Grid>

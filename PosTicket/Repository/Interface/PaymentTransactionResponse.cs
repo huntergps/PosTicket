@@ -8,6 +8,7 @@ namespace PosTicket.Repository.Interface
     {
         public PaymentTransactionResponseData result { get; set; }
         public string version { get; set; }
+        public ErrorMessage error { get; set; }
     }
     public class PaymentTransactionResponseTicket
     {

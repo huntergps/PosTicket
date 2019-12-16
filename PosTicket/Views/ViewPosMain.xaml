@@ -13,8 +13,11 @@
         WindowStyle="None">
     <Window.Resources>
         <DataTemplate x:Key="ProductTemplate">
-            <Button Margin="10 10 10 10" Width="250" Height="125" Command="{Binding AddToCartCommand}">
-                <TextBlock Text="{Binding name}"/>
+            <Button Margin="5 5 5 5" Width="220" Height="100" Command="{Binding AddToCartCommand}">
+                <StackPanel>
+                    <TextBlock Text="{Binding name}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding price,StringFormat='N0'}" HorizontalAlignment="Center"/>
+                </StackPanel>
             </Button>
         </DataTemplate>
     </Window.Resources>
@@ -62,10 +65,10 @@
                                 <ListView ItemsSource="{Binding CartList}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single">
                                     <ListView.Resources>
                                         <DataTemplate x:Key="priceHeader">
-                                            <TextBlock Text="{Binding price}" TextAlignment="Right" Height="25" Width="50"/>
+                                            <TextBlock Text="{Binding price, StringFormat='0,0'}" TextAlignment="Right" Height="25" Width="50"/>
                                         </DataTemplate>
                                         <DataTemplate x:Key="subtotalHeader">
-                                            <TextBlock Text="{Binding total}" TextAlignment="Right" Height="25" Width="100"/>
+                                            <TextBlock Text="{Binding total, StringFormat='0,0'}" TextAlignment="Right" Height="25" Width="100"/>
                                         </DataTemplate>
                                     </ListView.Resources>
                                     <ListView.View>
@@ -95,7 +98,7 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="Jumlah Tiket" FontSize="35"/>
                                     <TextBlock Grid.Column="1" Text=":" FontSize="35"/>
-                                    <TextBlock Grid.Column="2" Text="123" FontSize="35"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding TotalTiket}" FontSize="35"/>
                                 </Grid>
                             </Grid>
                         </materialDesign:Card>

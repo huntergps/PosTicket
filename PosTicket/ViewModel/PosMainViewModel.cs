@@ -20,6 +20,9 @@ namespace PosTicket.ViewModel
         public ICommand DeleteCartCommand { get; set; }
         public ICommand KeypadCommand { get; set; }
         public ICommand KeyPayCommand { get; set; }
+        public ICommand NumPayCommand { get; set; }
+        public ICommand NumClearPayCommand { get; set; }
+        public ICommand NumDelPayCommand { get; set; }
         public ICommand DelCommand { get; set; }
         public ICommand PaymentCommand { get; set; }
         public ICommand ClosePaymentCommand { get; set; }
@@ -29,10 +32,10 @@ namespace PosTicket.ViewModel
         private ReadPaymentResponse readPayment { get; set; }
         private ViewPayment paymentWindow { get; set; }
         public Action CloseAction { get; set; }
-       
+
         public PosMainViewModel()
         {
-            
+
             CartList = new ObservableCollection<Cart>();
             BayarList = new ObservableCollection<PayCart>();
             CloseSessionCommand = new RelayCommand(o => CloseSessionClick("CloseSessionCommandButton"));
@@ -41,7 +44,10 @@ namespace PosTicket.ViewModel
             ClosePaymentCommand = new RelayCommand(ClosePayment);
             KeypadCommand = new RelayCommand(UpdateCartQty);
             KeyPayCommand = new RelayCommand(UpdatePayCartBayar);
+            NumPayCommand = new RelayCommand(NumUpdatePayCartBayar);
             DelCommand = new RelayCommand(DelCartQty);
+            NumDelPayCommand = new RelayCommand(DelPayCartBayar);
+            NumClearPayCommand = new RelayCommand(ClearPayCartBayar);
             ValidatePaymentCommand = new RelayCommand(SendPaymentData);
             readConfig = new ReadConfig();
             readProduct = new ReadProductResponse();
@@ -51,13 +57,18 @@ namespace PosTicket.ViewModel
             PaymentMethodList = new List<PaymentData>();
             GetPaymentMethod();
         }
-        
-        private int staticnum=-1 ;
+
+        private int staticnum = -1;
 
         public void SetPayment(object sender)
         {
+            if (_grandTotal <= 0)
+            {
+                MaterialMessageBox.ShowDialog("Belum ada transaksi...!");
+                return;
+            }
             BayarList.Clear();
-            BayarList.Add(new PayCart { id =0, totaljual = _grandTotal, bayar = 0, reff = "",typebayar="" });
+            BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "" });
             RaisePropertyChanged("BayarList");
             paymentWindow.ShowDialog();
         }
@@ -68,19 +79,29 @@ namespace PosTicket.ViewModel
             foreach (PaymentData paymentData in paymentMethod.result)
             {
                 if (paymentData.AddToCartCommand == null)
-                    paymentData.AddToCartCommand = new RelayCommand(o => AddToPayCart(new PayCart { id = paymentData.id, totaljual = 0, bayar = 0, reff = paymentData.name, typebayar = paymentData.type}));
+                    paymentData.AddToCartCommand = new RelayCommand(o => AddToPayCart(new PayCart { id = paymentData.id, totaljual = 0, bayar = 0, reff = paymentData.name, typebayar = paymentData.type }));
                 PaymentMethodList.Add(paymentData);
             }
         }
 
         public void AddToPayCart(PayCart sender)
         {
-            int lastrow = BayarList.Count-1;
-            PayCart temp = BayarList.Last();
+
+            int lastrow = BayarList.Count - 1;
+            PayCart temp = BayarList[lastrow];
+            if (temp.totaljual <= 0)
+            {
+                return;
+            }
             temp.id = sender.id;
             temp.typebayar = sender.reff;
+            if (sender.typebayar != "cash")
+            {
+                temp.bayar = temp.totaljual;
+            }
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
+            BayarList.Add(new PayCart { id = 0, totaljual = float.Parse(temp.kembalian.ToString()), bayar = 0, reff = "", typebayar = "" });
             RaisePropertyChanged("BayarList");
         }
         public void ClosePayment(object sender)
@@ -89,13 +110,79 @@ namespace PosTicket.ViewModel
         }
         public void UpdatePayCartBayar(object sender)
         {
-            int lastrow = BayarList.Count - 1;
-            float byr = float.Parse(sender.ToString() + "000");
+            if (BayarList.Count == 1)
+            {
+                MaterialMessageBox.ShowDialog("Pilih Type Pembayaran terlebih dahulu...!");
+                return;
+            }
+            int lastrow = BayarList.Count - 2;
+            double byr = double.Parse(sender.ToString() + "000");
             PayCart temp = new PayCart();
-            temp = BayarList.Last();
+            temp = BayarList[lastrow];
             temp.bayar = temp.bayar + byr;
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
+
+            lastrow = BayarList.Count - 1;
+            PayCart temp2 = new PayCart();
+            temp2 = BayarList[lastrow];
+            temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
+            BayarList.RemoveAt(lastrow);
+            BayarList.Insert(lastrow, (PayCart)temp2);
+            RaisePropertyChanged("BayarList");
+        }
+        public void NumUpdatePayCartBayar(object sender)
+        {
+            if (BayarList.Count == 1)
+            {
+                MaterialMessageBox.ShowDialog("Pilih Type Pembayaran terlebih dahulu...!");
+                return;
+            }
+            int lastrow = BayarList.Count - 2;
+            //float byr = float.Parse(sender.ToString() + "000");
+            PayCart temp = new PayCart();
+            temp = BayarList[lastrow];
+            if (temp.bayar == 0)
+            {
+                temp.bayar = float.Parse(sender.ToString());
+            } else
+            {
+                temp.bayar = double.Parse(temp.bayar + sender.ToString());
+            }
+
+            BayarList.RemoveAt(lastrow);
+            BayarList.Insert(lastrow, (PayCart)temp);
+
+            lastrow = BayarList.Count - 1;
+            PayCart temp2 = new PayCart();
+            temp2 = BayarList[lastrow];
+            temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
+            BayarList.RemoveAt(lastrow);
+            BayarList.Insert(lastrow, (PayCart)temp2);
+            RaisePropertyChanged("BayarList");
+        }
+        public void ClearPayCartBayar(object sender)
+        {
+            if (BayarList.Count == 1)
+            {
+                MaterialMessageBox.ShowDialog("Pilih Type Pembayaran terlebih dahulu...!");
+                return;
+            }
+            int lastrow = BayarList.Count - 2;
+            //float byr = float.Parse(sender.ToString() + "000");
+            PayCart temp = new PayCart();
+            temp = BayarList[lastrow];
+            temp.bayar = 0;
+
+            BayarList.RemoveAt(lastrow);
+            BayarList.Insert(lastrow, (PayCart)temp);
+
+            lastrow = BayarList.Count - 1;
+            PayCart temp2 = new PayCart();
+            temp2 = BayarList[lastrow];
+            temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
+            BayarList.RemoveAt(lastrow);
+            BayarList.Insert(lastrow, (PayCart)temp2);
             RaisePropertyChanged("BayarList");
         }
         public void UpdateCartQty(object sender)
@@ -118,7 +205,37 @@ namespace PosTicket.ViewModel
                 SelectedItem = temp;
                 RaisePropertyChanged("CartList");
                 RaisePropertyChanged("GrandTotal");
+                RaisePropertyChanged("TotalTiket");
             }
+        }
+        public void DelPayCartBayar(object sender)
+        {
+            if (BayarList.Count == 1)
+            {
+                MaterialMessageBox.ShowDialog("Pilih Type Pembayaran terlebih dahulu...!");
+                return;
+            }
+            int lastrow = BayarList.Count - 2;
+            PayCart temp = new PayCart();
+            temp = BayarList[lastrow];
+            if (temp.bayar.ToString().Length == 1)
+            {
+                temp.bayar = 0;
+            }
+            else
+            {
+                temp.bayar = double.Parse(temp.bayar.ToString().Substring(0, temp.bayar.ToString().Length - 1));
+            }
+            BayarList.RemoveAt(lastrow);
+            BayarList.Insert(lastrow, (PayCart)temp);
+
+            lastrow = BayarList.Count - 1;
+            PayCart temp2 = new PayCart();
+            temp2 = BayarList[lastrow];
+            temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
+            BayarList.RemoveAt(lastrow);
+            BayarList.Insert(lastrow, (PayCart)temp2);
+            RaisePropertyChanged("BayarList");
         }
         public void DelCartQty(object sender)
         {
@@ -127,30 +244,31 @@ namespace PosTicket.ViewModel
                 int index = CartList.IndexOf((Cart)SelectedItem);
                 Cart temp = new Cart();
                 temp = SelectedItem;
-                if ( SelectedItem.qty.ToString().Length ==1 )
+                if (SelectedItem.qty.ToString().Length == 1)
                 {
                     SelectedItem.qty = 0;
                 } else
                 {
-                   SelectedItem.qty = int.Parse(SelectedItem.qty.ToString().Substring(0, SelectedItem.qty.ToString().Length-1))  ;
+                    SelectedItem.qty = int.Parse(SelectedItem.qty.ToString().Substring(0, SelectedItem.qty.ToString().Length - 1));
                 }
-                
+
                 CartList.RemoveAt(index);
                 CartList.Insert(index, (Cart)temp);
                 SelectedItem = temp;
                 RaisePropertyChanged("CartList");
                 RaisePropertyChanged("GrandTotal");
+                RaisePropertyChanged("TotalTiket");
             }
         }
         public void DeleteCartItem(object sender)
         {
             if (CartList != null)
-            {        
+            {
                 CartList.Remove(SelectedItem);
             }
             RaisePropertyChanged("CartList");
             RaisePropertyChanged("GrandTotal");
-
+            RaisePropertyChanged("TotalTiket");
         }
         public void AddToCart(Cart sender)
         {
@@ -160,8 +278,8 @@ namespace PosTicket.ViewModel
             {
                 foreach (Cart cartItem in CartList)
                 {
-                    
-                    if (cartItem.id == sender.id) 
+
+                    if (cartItem.id == sender.id)
                     {
                         IsNew = false;
                         cartItem.qty += 1;
@@ -172,7 +290,7 @@ namespace PosTicket.ViewModel
                         CartList.Insert(index, (Cart)temp);
                         break;
                     }
-                    else 
+                    else
                     {
                         IsNew = true;
                     }
@@ -185,7 +303,7 @@ namespace PosTicket.ViewModel
             }
             RaisePropertyChanged("CartList");
             RaisePropertyChanged("GrandTotal");
-
+            RaisePropertyChanged("TotalTiket");
         }
         private PayCart _SelectedPayment;
         public PayCart SelectedPayment
@@ -204,11 +322,11 @@ namespace PosTicket.ViewModel
         private Cart _selectedItem;
         public Cart SelectedItem
         {
-            get 
-            { 
-                return _selectedItem; 
+            get
+            {
+                return _selectedItem;
             }
-            set 
+            set
             {
                 _selectedItem = value;
                 RaisePropertyChanged("SelectedItem");
@@ -235,6 +353,7 @@ namespace PosTicket.ViewModel
                 _cartList = value;
                 RaisePropertyChanged("CartList");
                 RaisePropertyChanged("GrandTotal");
+                RaisePropertyChanged("TotalTiket");
             }
         }
         private ObservableCollection<PayCart> _BayarList;
@@ -260,11 +379,29 @@ namespace PosTicket.ViewModel
                 }
                 return _grandTotal.ToString("N0");
             }
-            set 
+            set
             {
                 RaisePropertyChanged("GrandTotal");
             }
         }
+        private float _TotalTiket;
+        public string TotalTiket
+        {
+            get
+            {
+                _TotalTiket = 0;
+                foreach (Cart cartItem in CartList)
+                {
+                    _TotalTiket += cartItem.qty;
+                }
+                return _TotalTiket.ToString("N0");
+            }
+            set
+            {
+                RaisePropertyChanged("TotalTiket");
+            }
+        }
+
         private List<PaymentData> _paymentMethodList;
         public List<PaymentData> PaymentMethodList
         {
@@ -299,7 +436,7 @@ namespace PosTicket.ViewModel
         public PosSessionCloseRequest PosSessionCloseData
         {
             get { return _posSessionCloseData; }
-            set 
+            set
             {
                 _posSessionCloseData = value;
                 RaisePropertyChanged("PosSessionCloseRequest");
@@ -347,7 +484,7 @@ namespace PosTicket.ViewModel
         {
             ObservableCollection<ProductCategoryData> productCategoryDatas = new ObservableCollection<ProductCategoryData>();
             List<ProductData> productDatas = new List<ProductData>();
-            ProductCategory productCategory = await readProduct.GetProductCategoryAsync(); 
+            ProductCategory productCategory = await readProduct.GetProductCategoryAsync();
             Product product = await readProduct.GetProductAsync();
             foreach (ProductData productData in product.result)
             {
@@ -358,13 +495,13 @@ namespace PosTicket.ViewModel
             {
                 foreach (ProductData productData in ProductList)
                 {
-                    if(productCategoryData.id == productData.category_id)
+                    if (productCategoryData.id == productData.category_id)
                     {
-                        if(productData.AddToCartCommand == null)
+                        if (productData.AddToCartCommand == null)
                             productData.AddToCartCommand = new RelayCommand(o => AddToCart(new Cart {
-                                id = productData.id, 
-                                name = productData.name, 
-                                qty = 1, 
+                                id = productData.id,
+                                name = productData.name,
+                                qty = 1,
                                 price = productData.price,
                                 product_price_id = productData.product_price_id
                             }));
@@ -372,7 +509,7 @@ namespace PosTicket.ViewModel
                         productCategoryData.products.Add(productData);
                     }
                 }
-                if(productCategoryData.products != null)
+                if (productCategoryData.products != null)
                 {
                     productCategoryDatas.Add(productCategoryData);
                 }
@@ -388,10 +525,11 @@ namespace PosTicket.ViewModel
         }
         private async void SendPaymentData(object sender)
         {
+
             PaymentTransactionRequest paymentTransactionRequest = new PaymentTransactionRequest();
 
             List<PaymentTransactionLineData> lineTransaksi = new List<PaymentTransactionLineData>();
-            foreach(Cart transactionLine in CartList)
+            foreach (Cart transactionLine in CartList)
             {
                 lineTransaksi.Add(new PaymentTransactionLineData {
                     sequence = CartList.IndexOf(transactionLine) + 1,
@@ -403,31 +541,40 @@ namespace PosTicket.ViewModel
                 });
             }
 
+            BayarList.Remove(BayarList[BayarList.Count - 1]);
             List<PaymentTransactionPaymentData> linePayment = new List<PaymentTransactionPaymentData>();
 
             foreach (PayCart paymentLine in BayarList)
             {
-                linePayment.Add(new PaymentTransactionPaymentData
+                float jmlbayar;
+                if (paymentLine.kembalian > 0)
                 {
-                    payment_method_id = paymentLine.id,
-                    amount = paymentLine.bayar,
-                    reference = paymentLine.reff,
-                });
+                    jmlbayar = paymentLine.totaljual;
+                } else
+                {
+                    jmlbayar = float.Parse(paymentLine.bayar.ToString());
+                }
+
+                linePayment.Add(new PaymentTransactionPaymentData { payment_method_id = paymentLine.id, amount = jmlbayar, reference = paymentLine.reff });
             }
-            paymentTransactionRequest.data = new PaymentTransactionRequestData { 
+            paymentTransactionRequest.data = new PaymentTransactionRequestData {
                 pos_ip = IpAddressValue,
                 date_plan = DateTime.Now.ToString("yyyy-MM-dd"),
                 line_ids = lineTransaksi,
                 payment_ids = linePayment
             };
             PaymentTransactionResponse paymentResponse = await readPayment.PostTransactionPayment(paymentTransactionRequest);
-            if (paymentResponse.result.error == null)
+            if (paymentResponse.result != null || paymentResponse.error == null)
             {
                 //close payment window
+                CartList.Clear();
+                paymentWindow.Hide();
+                RaisePropertyChanged("GrandTotal");
+                RaisePropertyChanged("TotalTiket");
             }
             else
             {
-                MaterialMessageBox.ShowDialog(paymentResponse.result.error.message, paymentResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+                MaterialMessageBox.ShowDialog(paymentResponse.error.message, paymentResponse.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
             }
         }
     }
