@@ -3,13 +3,24 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Printing;
+using System.Drawing;
+using System.Drawing.Printing;
 using PosTicket.Repository.Interface;
 using System.Text;
+using System.Threading.Tasks;
+using System.Net.Http;
+using PosTicket.Models;
+
 
 namespace PosTicket.Repository.PrinterData
 {
     class PrinterRepository : IPrinterRepository
     {
+        private ReadConfig readConfig { get; set; }
+        public PrinterRepository()
+        {
+            readConfig = new ReadConfig();
+        }
         public IEnumerable<Printer> GetPrinter()
         {
             List<Printer> printers = new List<Printer>();
@@ -135,10 +146,12 @@ namespace PosTicket.Repository.PrinterData
             Marshal.FreeCoTaskMem(pBytes);
             return true;
         }
-        public static bool CetakTicket(string printerName, List<Ticket> data)
+        public async Task<bool> CetakTicket(string printerName, List<Ticket> data)
         {
+            ConfigList = readConfig.GetAllConfigs();
             foreach (Ticket printer in data)
             {
+                await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "printing");
                 StringBuilder label = new StringBuilder();
                 label.AppendLine("^XA");
                 label.AppendLine("^POI");
@@ -152,8 +165,30 @@ namespace PosTicket.Repository.PrinterData
                 label.AppendLine("^FO30,615^ADN,12,8^FD" + printer.line6 + "^FS");
                 label.AppendLine("^XZ");
                 SendStringToPrinter(printerName, label.ToString());
+                await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "printed");
             }
             return true;
+        }
+
+        public async Task UpdateStatus(int ticket_id, string api_key, string server_url, string status)
+        {
+            var client = new HttpClient();
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, server_url + "/saloka/ticket/print_proxy/"+status+"/" + ticket_id);
+            requestMessage.Headers.Add("X-Api-Key", api_key);
+            requestMessage.Content = new StringContent("{}",
+                                    Encoding.UTF8,
+                                    "application/json");
+            _ = await client.SendAsync(requestMessage);
+        }
+
+        private List<Config> _configList;
+        public List<Config> ConfigList
+        {
+            get { return _configList; }
+            set
+            {
+                _configList = value;
+            }
         }
     }
 }
