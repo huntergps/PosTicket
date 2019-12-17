@@ -66,7 +66,7 @@ namespace PosTicket.ViewModel
             LockWindow.DataContext = this;
             readSession = new ReadSession();
             SessionList = readSession.GetSession();
-            Username = SessionList.user_name;
+            Username = SessionList.user_login;
             PaymentMethodList = new List<PaymentData>();
             GetPaymentMethod();
         }
@@ -105,10 +105,10 @@ namespace PosTicket.ViewModel
                 password = Password
             };
             GetLoginData(_loginRequest, sender);
-            readLoginResponse = new ReadLoginResponse();
         }
         private async void GetLoginData(LoginRequest _credentialValue, object sender)
         {
+            readLoginResponse = new ReadLoginResponse();
             LoginResponse loginResponse = await readLoginResponse.GetLoginAsync(_credentialValue);
             if (loginResponse.error == null)
             {

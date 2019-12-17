@@ -194,6 +194,7 @@ namespace PosTicket.ViewModel
                 {
                     user_id = loginResponse.result.res_user.id.ToString(),
                     user_name = loginResponse.result.res_user.name,
+                    user_login = _credentialValue.username,
                     token = loginResponse.result.token,
                     refresh_token = loginResponse.result.refresh_token,
                     token_live = loginResponse.result.token_live.ToString()
