@@ -25,20 +25,21 @@ namespace PosTicket.Repository.UserSession
             {
                 user_id = arr[0].Replace("\r\n", string.Empty),
                 user_name = arr[1].Replace("\r\n", string.Empty),
-                token = arr[2].Replace("\r\n", string.Empty),
-                refresh_token = arr[3].Replace("\r\n", string.Empty),
-                token_live = arr[4].Replace("\r\n", string.Empty)
+                user_login = arr[2].Replace("\r\n", string.Empty),
+                token = arr[3].Replace("\r\n", string.Empty),
+                refresh_token = arr[4].Replace("\r\n", string.Empty),
+                token_live = arr[5].Replace("\r\n", string.Empty)
             };
             return session;
         }
         public void UpdateSession(Session updatedSession)
         {
-            SecurityModule.EncDec dec = new SecurityModule.EncDec();
             writeConfig = new WriteConfig();
             string session_field = "session_data";
             StringBuilder session_data = new StringBuilder();
             string user_id = updatedSession.user_id;
             string user_name = updatedSession.user_name;
+            string user_login = updatedSession.user_login;
             string token = updatedSession.token;
             string refresh_token = updatedSession.refresh_token;
             string token_live = updatedSession.token_live;
@@ -47,6 +48,8 @@ namespace PosTicket.Repository.UserSession
             session_data.AppendLine(user_id);
             session_data.AppendLine("|");
             session_data.AppendLine(user_name);
+            session_data.AppendLine("|");
+            session_data.AppendLine(user_login);
             session_data.AppendLine("|");
             session_data.AppendLine(token);
             session_data.AppendLine("|");
