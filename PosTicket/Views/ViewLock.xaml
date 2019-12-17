@@ -31,17 +31,17 @@
                     <RowDefinition Height="25*"/>
                     <RowDefinition Height="25*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0"  Text="UNLOCK SCREEN" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" FontSize="18"/>
-                <TextBlock Grid.Row="1"  Text="USER NAME" HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="Gray" FontSize="18"/>
+                <TextBlock Grid.Row="0"  Text="LOCK SCREEN" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" FontSize="18"/>
+                <TextBlock Grid.Row="1"  Text="{Binding Username}" HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="Gray" FontSize="18"/>
 
                 <StackPanel Grid.Row="2"  VerticalAlignment="Center" HorizontalAlignment="Center" Width="250">
-                    <PasswordBox x:Name="txtPassword" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" FontFamily="Champagne &amp; Limousines" FontSize="18"  />
+                    <PasswordBox x:Name="txtPassword" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" FontFamily="Champagne &amp; Limousines" FontSize="18" PasswordChanged="PasswordBox_PasswordChanged"  />
                 </StackPanel>
-                <Button Grid.Row="3"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Unlock" Name="UnlockButton" Width="200" Height="40"  FontSize="18"/>
+                <Button Command="{Binding GetLockResponseCommand}" Grid.Row="3"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Unlock" Name="UnlockButton" Width="200" Height="40"  FontSize="18"/>
             </Grid>
 
             <Grid Width="280"  Margin="25,394,25,10">
-                <TextBlock Grid.Row="0"  Text="... POS ON UNLOCK MODE ..." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="BlueViolet" FontSize="18"/>
+                <TextBlock Grid.Row="0"  Text=":. POS ON LOCK MODE .:" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="BlueViolet" FontSize="18"/>
             </Grid>
         </Grid>
     </Border>

@@ -12,12 +12,16 @@ using PosTicket.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using PosTicket.Repository.PrinterData;
+using PosTicket.Repository.UserSession;
 
 namespace PosTicket.ViewModel
 {
     public class PosMainViewModel : NavigableControlViewModel
     {
         public ICommand CloseSessionCommand { get; set; }
+        public ICommand GetLockResponseCommand { get; set; }
+        private ReadSession readSession { get; set; }
+        public ICommand LockPosCommand { get; set; }
         public ICommand DeleteCartCommand { get; set; }
         public ICommand KeypadCommand { get; set; }
         public ICommand KeyPayCommand { get; set; }
@@ -32,14 +36,16 @@ namespace PosTicket.ViewModel
         private ReadProductResponse readProduct { get; set; }
         private ReadPaymentResponse readPayment { get; set; }
         private ViewPayment paymentWindow { get; set; }
+        private ViewLock LockWindow { get; set; }
         public Action CloseAction { get; set; }
-
+        private ReadLoginResponse readLoginResponse { get; set; }
         public PosMainViewModel()
         {
 
             CartList = new ObservableCollection<Cart>();
             BayarList = new ObservableCollection<PayCart>();
             CloseSessionCommand = new RelayCommand(o => CloseSessionClick("CloseSessionCommandButton"));
+            LockPosCommand = new RelayCommand(o => LockPosClick("LockPosCommandButton"));
             DeleteCartCommand = new RelayCommand(o => DeleteCartItem("DeleteCartCommandButton"));
             PaymentCommand = new RelayCommand(SetPayment);
             ClosePaymentCommand = new RelayCommand(ClosePayment);
@@ -55,12 +61,30 @@ namespace PosTicket.ViewModel
             readPayment = new ReadPaymentResponse();
             paymentWindow = new ViewPayment();
             paymentWindow.DataContext = this;
+            GetLockResponseCommand = new RelayCommand(GetLockResponseClick);
+            LockWindow = new ViewLock();
+            LockWindow.DataContext = this;
+            readSession = new ReadSession();
+            SessionList = readSession.GetSession();
+            Username = SessionList.user_name;
             PaymentMethodList = new List<PaymentData>();
             GetPaymentMethod();
         }
 
         private int staticnum = -1;
+        public string Username { get; set; }
 
+        public string _passwordValue;
+        public string Password
+        {
+            get { return _passwordValue; }
+            set
+            {
+                _passwordValue = value;
+                RaisePropertyChanged("Password");
+            }
+        }
+        public Session SessionList { get; set; }
         public void SetPayment(object sender)
         {
             if (_grandTotal <= 0)
@@ -73,7 +97,27 @@ namespace PosTicket.ViewModel
             RaisePropertyChanged("BayarList");
             paymentWindow.ShowDialog();
         }
-
+        private void GetLockResponseClick(object sender)
+        {
+            LoginRequest _loginRequest = new LoginRequest
+            {
+                username = Username,
+                password = Password
+            };
+            GetLoginData(_loginRequest, sender);
+            readLoginResponse = new ReadLoginResponse();
+        }
+        private async void GetLoginData(LoginRequest _credentialValue, object sender)
+        {
+            LoginResponse loginResponse = await readLoginResponse.GetLoginAsync(_credentialValue);
+            if (loginResponse.error == null)
+            {
+                LockWindow.Hide();
+            } else
+            {
+                MaterialMessageBox.ShowDialog(loginResponse.error.message, loginResponse.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+            }
+        }
         public async void GetPaymentMethod()
         {
             PaymentMethod paymentMethod = await readPayment.GetPaymentMethodAsync();
@@ -463,6 +507,10 @@ namespace PosTicket.ViewModel
                 RaisePropertyChanged("ConfigList");
             }
         }
+        private void LockPosClick(object sender)
+        {
+            LockWindow.ShowDialog();
+        }
         private void CloseSessionClick(object sender)
         {
             ClosePosSession(PosSessionCloseData);
@@ -570,11 +618,11 @@ namespace PosTicket.ViewModel
                 PrinterRepository printerRepository = new PrinterRepository();
                 printerRepository.CetakReceipt(ConfigList[0].pos_printer, new Receipt
                 {
-                    line1 = "==========================================",
+                    line1 = "========================================",
                     line2 = "            Saloka Theme Park             ",
-                    line3 = "==========================================",
+                    line3 = "========================================",
                     line4 = "           Struk Pembelian Ticket         ",
-                    line5 = "==========================================",
+                    line5 = "========================================",
                     line6 = (char)27+"@"+ (char)27+"p"+(char)0+".}"
                 }) ;
                 await printerRepository.CetakTicket(ConfigList[0].ticket_printer, paymentResponse.result.tickets);

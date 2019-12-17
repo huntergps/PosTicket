@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using PosTicket.ViewModel;
+using PosTicket.Repository.UserSession;
 
 namespace PosTicket.Views
 {

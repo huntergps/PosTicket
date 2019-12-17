@@ -27,7 +27,7 @@
                 <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" Margin="15">
                     <ListBox>
                         <ListBoxItem>
-                            <Button Command="{Binding CloseSessionCommand}" Content="Lock Screen"/>
+                            <Button Command="{Binding LockPosCommand}" Content="Lock Screen"/>
                         </ListBoxItem>
                         <ListBoxItem>
                             <Button Command="{Binding CloseSessionCommand}" Content="Close Session"/>
@@ -39,7 +39,7 @@
                 </materialDesign:PopupBox>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center" Margin="16 0 0 0">Selamat Datang:</TextBlock>
-                    <TextBlock VerticalAlignment="Center" Margin="16 0 0 0">UserName</TextBlock>
+                    <TextBlock Text="{Binding Username}" VerticalAlignment="Center" Margin="16 0 0 0" />
                 </StackPanel>
             </DockPanel>
         </materialDesign:ColorZone>
