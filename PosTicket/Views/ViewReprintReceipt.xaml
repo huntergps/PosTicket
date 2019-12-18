@@ -29,17 +29,17 @@ Title="ViewReprintRecaipt" Height="450" Width="550" WindowStartupLocation="Cente
                     <ColumnDefinition Width="20*"/>
                 </Grid.ColumnDefinitions>
                 <Label   Grid.Column="1" Content="No. POS : " VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
-                <TextBox Grid.Column="2" x:Name="InputTextBox" Margin="5" />
+                <TextBox Grid.Column="2" x:Name="InputTextBox" Margin="5" Text="{Binding numberReceipt}"/>
                 <Button Grid.Column="3" Content="Cari" Margin="5 0 0 0" Command="{Binding FindReceiptCommand}"/>
             </Grid>
             <Grid Grid.Row="2" >
-                <ListView ItemsSource="{Binding BayarList}" SelectedItem="{Binding SelectedPayment}" SelectionMode="Single">
+                <ListView ItemsSource="{Binding ReceiptList}">
                     <ListView.Resources>
                         <DataTemplate x:Key="priceHeader">
-                            <TextBlock Text="{Binding price, StringFormat='0,0'}" TextAlignment="Right" Height="25" Width="50"/>
+                            <TextBlock Text="{Binding price_unit, StringFormat='0,0'}" TextAlignment="Right" Height="25" Width="50"/>
                         </DataTemplate>
                         <DataTemplate x:Key="subtotalHeader">
-                            <TextBlock Text="{Binding total, StringFormat='0,0'}" TextAlignment="Right" Height="25" Width="100"/>
+                            <TextBlock Text="{Binding amount_total, StringFormat='0,0'}" TextAlignment="Right" Height="25" Width="100"/>
                         </DataTemplate>
                     </ListView.Resources>
                     <ListView.View>

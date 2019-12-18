@@ -29,6 +29,7 @@ namespace PosTicket.ViewModel
         public ICommand CancelReprintTicketCommand { get; set; }
 
         public ICommand ReprintReceiptCommand { get; set; }
+        public ICommand FindReceiptCommand { get; set; }
         public ICommand PrintReceiptCommand { get; set; }
         public ICommand CancelReprintReceiptCommand { get; set; }
         public ICommand DeleteCartCommand { get; set; }
@@ -52,6 +53,7 @@ namespace PosTicket.ViewModel
         public Action CloseAction { get; set; }
         private ReadLoginResponse readLoginResponse { get; set; }
         private ReadPrintTicketResponse readPrintTicketResponse { get; set; }
+        private ReadPrintReceiptResponse readPrintReceiptResponse { get; set; }
         public PosMainViewModel()
         {
 
@@ -61,11 +63,12 @@ namespace PosTicket.ViewModel
             LockPosCommand = new RelayCommand(o => LockPosClick("LockPosCommandButton"));
 
             ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("PrintTiketCommandButton"));
-            FindTicketCommand = new RelayCommand(o => FindTiketClick("PrintTiketCommandButton"));
+            FindTicketCommand = new RelayCommand(o => FindTiketClick("FindTiketCommandButton"));
             PrintTicketCommand = new RelayCommand(o => PrintTiketClick("ReprintTiketCommandButton"));
             CancelReprintTicketCommand = new RelayCommand(o => CancelReprintTiketClick("CancelReprintTiketCommandButton"));
             
             ReprintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("ReprintReceiptCommandButton"));
+            FindReceiptCommand = new RelayCommand(o => FindReceiptClick("FindReceiptCommandButton"));
             PrintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("PrintReceiptCommandButton"));
             CancelReprintReceiptCommand = new RelayCommand(o => CancelReprintReceiptClick("CancelReprintReceiptCommandButton"));
             
@@ -101,6 +104,8 @@ namespace PosTicket.ViewModel
             Username = SessionList.user_name;
             Userlogin= SessionList.user_login;
             PaymentMethodList = new List<PaymentData>();
+            TicketList = new ObservableCollection<ListTicketResponse>();
+            ReceiptList = new ObservableCollection<ListReceiptResponse>();
             GetPaymentMethod();
         }
 
@@ -563,6 +568,16 @@ namespace PosTicket.ViewModel
                 RaisePropertyChanged("numberPos");
             }
         }
+        private string _numberReceipt;
+        public string numberReceipt
+        {
+            get { return _numberReceipt; }
+            set
+            {
+                _numberReceipt = value;
+                RaisePropertyChanged("numberReceipt");
+            }
+        }
         private void FindTiketClick(object sender)
         {
             GetTicketList(numberPos);
@@ -574,6 +589,10 @@ namespace PosTicket.ViewModel
         private void ReprintTiketClick(object sender)
         {
             ReprintTiketWindow.ShowDialog();
+        }
+        private void FindReceiptClick(object sender)
+        {
+            GetReceiptList(numberReceipt);
         }
         private void ReprintReceiptClick(object sender)
         {
@@ -683,6 +702,36 @@ namespace PosTicket.ViewModel
             else
             {
                 MaterialMessageBox.ShowDialog(PrintTicketResponse.result[0].error.message.ToString(), PrintTicketResponse.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+            }
+
+        }
+
+        private ObservableCollection<ListReceiptResponse> _ReceiptList;
+        public ObservableCollection<ListReceiptResponse> ReceiptList
+        {
+            get { return _ReceiptList; }
+            set
+            {
+                _ReceiptList = value;
+                RaisePropertyChanged("ReceiptList");
+            }
+        }
+        private async void GetReceiptList(string _receiptNumber)
+        {
+            readPrintReceiptResponse = new ReadPrintReceiptResponse();
+            ReprintReceiptResponse PrintReceiptResponse = await readPrintReceiptResponse.GetReceiptBySale(_receiptNumber);
+            if (PrintReceiptResponse.result[0].error == null)
+            {
+
+                foreach (ListReceiptResponse listReceiptResponse in PrintReceiptResponse.result)
+                {
+                    ReceiptList.Add(listReceiptResponse);
+                }
+
+            }
+            else
+            {
+                MaterialMessageBox.ShowDialog(PrintReceiptResponse.result[0].error.message.ToString(), PrintReceiptResponse.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
             }
 
         }
