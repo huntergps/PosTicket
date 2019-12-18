@@ -41,7 +41,14 @@
                 <StackPanel Grid.Row="2"  VerticalAlignment="Center" HorizontalAlignment="Center" Width="250">
                     <PasswordBox x:Name="txtPasswd" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" FontFamily="Champagne &amp; Limousines" FontSize="18" PasswordChanged="PasswordBox_PasswordChanged"  />
                 </StackPanel>
-                <Button Command="{Binding GetPermisionkResponseCommand}" Grid.Row="3"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Proses" Name="PermisionButton" Width="200" Height="40"  FontSize="18"/>
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Command="{Binding GetPermisionResponseCommand}" Grid.Column="0"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Proses" Name="PermisionButton" Width="120" Height="50"  FontSize="18"/>
+                    <Button Command="{Binding CancelPermisionResponseCommand}" Grid.Column="1"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Cancel" Name="CancelPermisionButton" Width="120" Height="50"  FontSize="18"/>
+                </Grid>
             </Grid>
 
             <Grid Width="280"  Margin="25,394,25,10" Grid.ColumnSpan="2">

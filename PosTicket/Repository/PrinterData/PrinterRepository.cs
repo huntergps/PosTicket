@@ -149,6 +149,7 @@ namespace PosTicket.Repository.PrinterData
         public bool CetakReceipt(string printerName, Receipt data)
         {
             StringBuilder label = new StringBuilder();
+            
             label.AppendLine(data.line1);
             label.AppendLine(data.line2);
             label.AppendLine(data.line3);
