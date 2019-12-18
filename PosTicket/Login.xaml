@@ -7,37 +7,41 @@
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        Title="Login" Height="500" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
-    <Grid ClipToBounds="True">
-        <Rectangle Height="280" VerticalAlignment="Top">
-            <Rectangle.Fill>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#FF2281D1" />
-                    <GradientStop Color="#FF34268A" Offset="1" />
-                    <GradientStop Color="#FF33288B" Offset="0.5"/>
-                </LinearGradientBrush>
-            </Rectangle.Fill>
-        </Rectangle>
-        <materialDesign:PackIcon Kind="Ticket" Foreground="White" Width="250" Height="100" VerticalAlignment="Top" Margin="50,20,0,0"/>
-        <Rectangle Width="280" Height="240" Fill="White" VerticalAlignment="Bottom" Margin="0,100" RadiusX="12.364" RadiusY="12.364">
-            <Rectangle.Effect>
-                <DropShadowEffect Color="#FFBBBBBB" Direction="0" BlurRadius="10" RenderingBias="Quality" ShadowDepth="1"/>
-            </Rectangle.Effect>
-        </Rectangle>
-        <Grid Width="280" Height="240" VerticalAlignment="Bottom" Margin="0,100">
-            <TextBlock Text="LOGIN" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" Foreground="Gray" FontSize="18"/>
-            <StackPanel VerticalAlignment="Center" Margin="10">
-                <TextBox x:Name="txtLogin" materialDesign:HintAssist.Hint="USERNAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,10" FontFamily="Champagne &amp; Limousines" FontSize="18" Text="{Binding UsernameValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                <PasswordBox x:Name="txtPassword" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" Margin="0,10" FontFamily="Champagne &amp; Limousines" FontSize="18" PasswordChanged="PasswordBox_PasswordChanged" />
-            </StackPanel>
+        Title="Login" Height="500" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" >
+    <Border CornerRadius="5"
+            BorderBrush="#FFAAAAAA"
+            BorderThickness="1">
+        <Grid ClipToBounds="True">
+            <Rectangle Height="280" VerticalAlignment="Top">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF2281D1" />
+                        <GradientStop Color="#FF34268A" Offset="1" />
+                        <GradientStop Color="#FF33288B" Offset="0.5"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <materialDesign:PackIcon Kind="Ticket" Foreground="White" Width="250" Height="100" VerticalAlignment="Top" Margin="50,20,0,0"/>
+            <Rectangle Width="280" Height="240" Fill="White" VerticalAlignment="Bottom" Margin="0,100" RadiusX="12.364" RadiusY="12.364">
+                <Rectangle.Effect>
+                    <DropShadowEffect Color="#FFBBBBBB" Direction="0" BlurRadius="10" RenderingBias="Quality" ShadowDepth="1"/>
+                </Rectangle.Effect>
+            </Rectangle>
+            <Grid Width="280" Height="240" VerticalAlignment="Bottom" Margin="0,100">
+                <TextBlock Text="LOGIN" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" Foreground="Gray" FontSize="18"/>
+                <StackPanel VerticalAlignment="Center" Margin="10">
+                    <TextBox x:Name="txtLogin" materialDesign:HintAssist.Hint="USERNAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,10" FontFamily="Champagne &amp; Limousines" FontSize="18" Text="{Binding UsernameValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    <PasswordBox x:Name="txtPassword" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" Margin="0,10" FontFamily="Champagne &amp; Limousines" FontSize="18" PasswordChanged="PasswordBox_PasswordChanged" />
+                </StackPanel>
+            </Grid>
+            <Button VerticalAlignment="Bottom" Margin="0,85" Width="150" Content="Login" Name="LoginButton" Command="{Binding GetLoginResponseCommand}" CommandParameter="{Binding ElementName=loginWindow}" />
+            <materialDesign:DialogHost IsOpen="{Binding DialogHostStatus,  UpdateSourceTrigger=PropertyChanged}" DialogOpened="DialogHost_DialogOpened">
+                <StackPanel VerticalAlignment="Center" Margin="10">
+                    <ProgressBar x:Name="loginProgress" Style="{DynamicResource MaterialDesignCircularProgressBar}" HorizontalAlignment="Center" IsIndeterminate="{Binding DialogHostStatus,  UpdateSourceTrigger=PropertyChanged}" Value="{Binding ProgressBarValue,  UpdateSourceTrigger=PropertyChanged}" Height="70" Width="70" />
+                </StackPanel>
+            </materialDesign:DialogHost>
+            <Button Content="Tutup Aplikasi" Command="{Binding CloseWindowCommand}" CommandParameter="{Binding ElementName=loginWindow}" Margin="100,417,100,30" Width="150"/>
+            <Button x:Name="ButtonConfig" Content="Button" HorizontalAlignment="Left" Height="20" Margin="320,0,0,0" VerticalAlignment="Top" Width="20" Click="ButtonConfig_Click"/>
         </Grid>
-        <Button VerticalAlignment="Bottom" Margin="0,85" Width="150" Content="Login" Name="LoginButton" Command="{Binding GetLoginResponseCommand}" CommandParameter="{Binding ElementName=loginWindow}" />
-        <materialDesign:DialogHost IsOpen="{Binding DialogHostStatus,  UpdateSourceTrigger=PropertyChanged}" DialogOpened="DialogHost_DialogOpened">
-            <StackPanel VerticalAlignment="Center" Margin="10">
-                <ProgressBar x:Name="loginProgress" Style="{DynamicResource MaterialDesignCircularProgressBar}" HorizontalAlignment="Center" IsIndeterminate="{Binding DialogHostStatus,  UpdateSourceTrigger=PropertyChanged}" Value="{Binding ProgressBarValue,  UpdateSourceTrigger=PropertyChanged}" Height="70" Width="70" />
-            </StackPanel>
-        </materialDesign:DialogHost>
-        <Button Content="Tutup Aplikasi" Command="{Binding CloseWindowCommand}" CommandParameter="{Binding ElementName=loginWindow}" Margin="100,417,100,30" Width="150"/>
-        <Button x:Name="ButtonConfig" Content="Button" HorizontalAlignment="Left" Height="20" Margin="320,0,0,0" VerticalAlignment="Top" Width="20" Click="ButtonConfig_Click"/>
-    </Grid>
+    </Border>
 </Window>

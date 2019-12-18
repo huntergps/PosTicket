@@ -121,13 +121,13 @@
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
-                                        <Button Grid.Row="0" Height="Auto" Margin="0 5 0 0">
+                                        <Button Grid.Row="0" Height="Auto" Margin="0 5 0 0" Command="{Binding ReprintTiketCommand}">
                                             <StackPanel>
                                                 <TextBlock Text="Reprint Ticket"/>
                                                 <materialDesign:PackIcon Kind="CashRegister" Foreground="White" Height="70" Width="auto"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Grid.Row="1" Height="Auto" Margin="0 10 0 0">
+                                        <Button Grid.Row="1" Height="Auto" Margin="0 10 0 0" Command="{Binding ReprintReceiptCommand}">
                                             <StackPanel>
                                                 <TextBlock Text="Reprint Receipt"/>
                                                 <materialDesign:PackIcon Kind="Printer" Foreground="White" Height="60" Width="auto"/>

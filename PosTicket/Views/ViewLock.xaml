@@ -6,10 +6,14 @@
         xmlns:local="clr-namespace:PosTicket.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="ViewLock" Height="500" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
-    <Border Padding="10">
+        Title="ViewLock" Height="500" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" BorderBrush="LightGray">
+    <Border CornerRadius="5" BorderBrush="#FFAAAAAA" BorderThickness="1">
         <Grid ClipToBounds="True">
-            <Rectangle Height="280" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="10*"/>
+            </Grid.ColumnDefinitions>
+            <Rectangle Height="280" VerticalAlignment="Top" Grid.ColumnSpan="2">
                 <Rectangle.Fill>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF2281D1" />
@@ -18,13 +22,13 @@
                     </LinearGradientBrush>
                 </Rectangle.Fill>
             </Rectangle>
-            <materialDesign:PackIcon Kind="LockWarning" Foreground="White" Width="250" Height="100" VerticalAlignment="Top" Margin="50,20,0,0"/>
-            <Rectangle Width="280" Height="240" Fill="White" VerticalAlignment="Bottom" Margin="0,100" RadiusX="12.364" RadiusY="12.364">
+            <materialDesign:PackIcon Kind="LockWarning" Foreground="White" Width="250" Height="100" Margin="20,20,0,0" Grid.Column="1"/>
+            <Rectangle Width="280" Height="240" Fill="White" VerticalAlignment="Bottom" Margin="25,0,25,100" RadiusX="12.364" RadiusY="12.364" Grid.ColumnSpan="2">
                 <Rectangle.Effect>
                     <DropShadowEffect Color="#FFBBBBBB" Direction="0" BlurRadius="10" RenderingBias="Quality" ShadowDepth="1"/>
                 </Rectangle.Effect>
             </Rectangle>
-            <Grid Width="280" Height="240" VerticalAlignment="Bottom" Margin="0,100">
+            <Grid Width="280" Height="240" VerticalAlignment="Bottom" Margin="25,0,25,100" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25*"/>
                     <RowDefinition Height="25*"/>
@@ -40,7 +44,7 @@
                 <Button Command="{Binding GetLockResponseCommand}" Grid.Row="3"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Unlock" Name="UnlockButton" Width="200" Height="40"  FontSize="18"/>
             </Grid>
 
-            <Grid Width="280"  Margin="25,394,25,10">
+            <Grid Width="280"  Margin="25,394,25,10" Grid.ColumnSpan="2">
                 <TextBlock Grid.Row="0"  Text=":. POS ON LOCK MODE .:" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="BlueViolet" FontSize="18"/>
             </Grid>
         </Grid>

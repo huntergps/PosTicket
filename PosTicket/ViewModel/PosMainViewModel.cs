@@ -22,6 +22,7 @@ namespace PosTicket.ViewModel
         public ICommand GetLockResponseCommand { get; set; }
         private ReadSession readSession { get; set; }
         public ICommand LockPosCommand { get; set; }
+        public ICommand ReprintTiketCommand { get; set; }
         public ICommand DeleteCartCommand { get; set; }
         public ICommand KeypadCommand { get; set; }
         public ICommand KeyPayCommand { get; set; }
@@ -37,6 +38,7 @@ namespace PosTicket.ViewModel
         private ReadPaymentResponse readPayment { get; set; }
         private ViewPayment paymentWindow { get; set; }
         private ViewLock LockWindow { get; set; }
+        private ViewReprintTicket ReprintTiketWindow { get; set; }
         public Action CloseAction { get; set; }
         private ReadLoginResponse readLoginResponse { get; set; }
         public PosMainViewModel()
@@ -46,6 +48,7 @@ namespace PosTicket.ViewModel
             BayarList = new ObservableCollection<PayCart>();
             CloseSessionCommand = new RelayCommand(o => CloseSessionClick("CloseSessionCommandButton"));
             LockPosCommand = new RelayCommand(o => LockPosClick("LockPosCommandButton"));
+            ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("ReprintTiketCommandButton"));
             DeleteCartCommand = new RelayCommand(o => DeleteCartItem("DeleteCartCommandButton"));
             PaymentCommand = new RelayCommand(SetPayment);
             ClosePaymentCommand = new RelayCommand(ClosePayment);
@@ -64,15 +67,19 @@ namespace PosTicket.ViewModel
             GetLockResponseCommand = new RelayCommand(GetLockResponseClick);
             LockWindow = new ViewLock();
             LockWindow.DataContext = this;
+            ReprintTiketWindow = new ViewReprintTicket();
+            ReprintTiketWindow.DataContext = this;
             readSession = new ReadSession();
             SessionList = readSession.GetSession();
-            Username = SessionList.user_login;
+            Username = SessionList.user_name;
+            Userlogin= SessionList.user_login;
             PaymentMethodList = new List<PaymentData>();
             GetPaymentMethod();
         }
 
         private int staticnum = -1;
         public string Username { get; set; }
+        public string Userlogin { get; set; }
 
         public string _passwordValue;
         public string Password
@@ -101,7 +108,7 @@ namespace PosTicket.ViewModel
         {
             LoginRequest _loginRequest = new LoginRequest
             {
-                username = Username,
+                username = Userlogin,
                 password = Password
             };
             GetLoginData(_loginRequest, sender);
@@ -510,6 +517,10 @@ namespace PosTicket.ViewModel
         private void LockPosClick(object sender)
         {
             LockWindow.ShowDialog();
+        }
+        private void ReprintTiketClick(object sender)
+        {
+            ReprintTiketWindow.ShowDialog();
         }
         private void CloseSessionClick(object sender)
         {

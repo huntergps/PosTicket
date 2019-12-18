@@ -13,18 +13,13 @@ using System.Windows.Shapes;
 namespace PosTicket.Views
 {
     /// <summary>
-    /// Interaction logic for ViewPermision.xaml
+    /// Interaction logic for ViewReprintTicket.xaml
     /// </summary>
-    public partial class ViewPermision : Window
+    public partial class ViewReprintTicket : Window
     {
-        public ViewPermision()
+        public ViewReprintTicket()
         {
             InitializeComponent();
-        }
-        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            if (this.DataContext != null)
-            { ((dynamic)this.DataContext).Password = ((PasswordBox)sender).Password; }
         }
     }
 }

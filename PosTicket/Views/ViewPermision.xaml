@@ -4,9 +4,49 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PosTicket.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="ViewPermision" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="ViewPermision" Height="500" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" BorderBrush="LightGray">
+    <Border CornerRadius="5" BorderBrush="#FFAAAAAA" BorderThickness="1">
+        <Grid ClipToBounds="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="10*"/>
+            </Grid.ColumnDefinitions>
+            <Rectangle Height="280" VerticalAlignment="Top" Grid.ColumnSpan="2">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF2281D1" />
+                        <GradientStop Color="#FF34268A" Offset="1" />
+                        <GradientStop Color="#FF33288B" Offset="0.5"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <materialDesign:PackIcon Kind="UserSupervisorCircle" Foreground="White" Width="250" Height="100" Margin="20,20,0,0" Grid.Column="1"/>
+            <Rectangle Width="280" Height="240" Fill="White" VerticalAlignment="Bottom" Margin="25,0,25,100" RadiusX="12.364" RadiusY="12.364" Grid.ColumnSpan="2">
+                <Rectangle.Effect>
+                    <DropShadowEffect Color="#FFBBBBBB" Direction="0" BlurRadius="10" RenderingBias="Quality" ShadowDepth="1"/>
+                </Rectangle.Effect>
+            </Rectangle>
+            <Grid Width="280" Height="240" VerticalAlignment="Bottom" Margin="25,0,25,100" Grid.ColumnSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25*"/>
+                    <RowDefinition Height="25*"/>
+                    <RowDefinition Height="25*"/>
+                    <RowDefinition Height="25*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"  Text="USER SUPERVISOR" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" FontSize="18"/>
+
+                <TextBox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" x:Name="txtLogin" materialDesign:HintAssist.Hint="USERNAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  FontFamily="Champagne &amp; Limousines" FontSize="18" />
+                <StackPanel Grid.Row="2"  VerticalAlignment="Center" HorizontalAlignment="Center" Width="250">
+                    <PasswordBox x:Name="txtPasswd" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" FontFamily="Champagne &amp; Limousines" FontSize="18" PasswordChanged="PasswordBox_PasswordChanged"  />
+                </StackPanel>
+                <Button Command="{Binding GetPermisionkResponseCommand}" Grid.Row="3"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Unlock" Name="PermisionButton" Width="200" Height="40"  FontSize="18"/>
+            </Grid>
+
+            <Grid Width="280"  Margin="25,394,25,10" Grid.ColumnSpan="2">
+                <TextBlock Grid.Row="0"  Text=":. AUTHORIZATION USER REPRINT .:" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="BlueViolet" FontSize="18"/>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>
