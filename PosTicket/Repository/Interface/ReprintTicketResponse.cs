@@ -11,10 +11,10 @@ namespace PosTicket.Repository.Interface
     {
         public List<Ticket> result { get; set; }
         public string version { get; set; }
-        public ErrorMessage error { get; set; }
     }
     public class ListTicketResponse
     {
+        public ErrorMessage error { get; set; }
         public int id { get; set; }
         public string barcode { get; set; }
         public string product_name { get; set; }

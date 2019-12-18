@@ -1,0 +1,67 @@
+﻿<Window x:Class="PosTicket.Views.ViewReprintReceipt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PosTicket.Views"
+        mc:Ignorable="d"
+Title="ViewReprintRecaipt" Height="450" Width="550" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None">
+    <Border CornerRadius="5" BorderBrush="#FFAAAAAA" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="7*"/>
+                <RowDefinition Height="13*"/>
+                <RowDefinition Height="60*"/>
+                <RowDefinition Height="20*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="SlateBlue" >
+                <TextBlock Text=":. Reprint Receipt .:" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" />
+
+            </Grid>
+
+            <Grid Grid.Row="1" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="40*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="20*"/>
+                </Grid.ColumnDefinitions>
+                <Label   Grid.Column="1" Content="No. POS : " VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                <TextBox Grid.Column="2" x:Name="InputTextBox" Margin="5" />
+                <Button Grid.Column="3" Content="Cari" Margin="5 0 0 0" Command="{Binding FindReceiptCommand}"/>
+            </Grid>
+            <Grid Grid.Row="2" >
+                <ListView ItemsSource="{Binding BayarList}" SelectedItem="{Binding SelectedPayment}" SelectionMode="Single">
+                    <ListView.Resources>
+                        <DataTemplate x:Key="priceHeader">
+                            <TextBlock Text="{Binding price, StringFormat='0,0'}" TextAlignment="Right" Height="25" Width="50"/>
+                        </DataTemplate>
+                        <DataTemplate x:Key="subtotalHeader">
+                            <TextBlock Text="{Binding total, StringFormat='0,0'}" TextAlignment="Right" Height="25" Width="100"/>
+                        </DataTemplate>
+                    </ListView.Resources>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn DisplayMemberBinding="{Binding name}" Header="Name" Width="280" />
+                            <GridViewColumn DisplayMemberBinding="{Binding qty}" Header="Qty" />
+                            <GridViewColumn CellTemplate="{StaticResource priceHeader}" Header="Price" Width="auto"/>
+                            <GridViewColumn CellTemplate="{StaticResource subtotalHeader}" Header="Subtotal"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+            <Grid Grid.Row="3" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60*"/>
+                    <ColumnDefinition Width="30*"/>
+                    <ColumnDefinition Width="30*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="1" Content="Print" Margin="2 2 2 2" Command="{Binding PrintReceiptCommand}"/>
+                <Button Grid.Column="2" Content="Cancel" Margin="2 2 2 2" Command="{Binding CancelReprintReceiptCommand}"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

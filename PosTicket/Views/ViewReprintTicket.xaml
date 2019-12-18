@@ -29,17 +29,17 @@
                     <ColumnDefinition Width="20*"/>                                        
                 </Grid.ColumnDefinitions>
                 <Label   Grid.Column="1" Content="No. POS : " VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
-                <TextBlock Grid.Column="2" x:Name="InputTextBox" Margin="5" />
-                <Button Grid.Column="3" Content="Cari"/>
+                <TextBox Grid.Column="2" x:Name="InputNoPOS" Margin="5" VerticalAlignment="Center" Text="{Binding numberPos}"/>
+                <Button Grid.Column="3" Content="Cari" Margin="5 0 0 0" Command="{Binding FindTicketCommand}"/>
             </Grid>
             <Grid Grid.Row="2" >
-                <ListView ItemsSource="{Binding BayarList}" SelectedItem="{Binding SelectedPayment}" SelectionMode="Single">
+                <ListView ItemsSource="{Binding TicketList}" SelectedItem="{Binding SelectedTicketList}" SelectionMode="Single">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn DisplayMemberBinding="{Binding nobarcode}" Header="No. Barcode" Width="110" />
-                            <GridViewColumn DisplayMemberBinding="{Binding namaproduk}" Header="Produk" Width="120" />
-                            <GridViewColumn DisplayMemberBinding="{Binding tgldatang}" Header="Tgl. Kedatangan" Width="130" />
-                            <GridViewColumn DisplayMemberBinding="{Binding statusticket}" Header="Status" Width="80" />
+                            <GridViewColumn DisplayMemberBinding="{Binding barcode}" Header="No. Barcode" Width="110" />
+                            <GridViewColumn DisplayMemberBinding="{Binding product_name}" Header="Produk" Width="120" />
+                            <GridViewColumn DisplayMemberBinding="{Binding date_plan}" Header="Tgl. Kedatangan" Width="130" />
+                            <GridViewColumn DisplayMemberBinding="{Binding state}" Header="Status" Width="80" />
                             <GridViewColumn Header="Cetak" Width="80">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
@@ -59,8 +59,8 @@
                     <ColumnDefinition Width="30*"/>
                     <ColumnDefinition Width="5*"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="1" Content="Print" Margin="2 2 2 2"/>
-                <Button Grid.Column="2" Content="Cancel" Margin="2 2 2 2"/>
+                <Button Grid.Column="1" Content="Print" Margin="2 2 2 2"  Command="{Binding PrintTicketCommand}"/>
+                <Button Grid.Column="2" Content="Cancel" Margin="2 2 2 2" Command="{Binding CancelReprintTicketCommand}"/>
             </Grid>
         </Grid>
     </Border>

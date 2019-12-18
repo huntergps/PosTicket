@@ -30,11 +30,11 @@
                             <Button Command="{Binding LockPosCommand}" Content="Lock Screen"/>
                         </ListBoxItem>
                         <ListBoxItem>
-                            <Button Command="{Binding CloseSessionCommand}" Content="Close Session"/>
+                            <Button Command="{Binding CloseSessionCommand}" Content="Close POS"/>
                         </ListBoxItem>
-                        <ListBoxItem>
+                        <!-- <ListBoxItem>
                             <Button Command="{Binding CloseSessionCommand}" Content="Logout"/>
-                        </ListBoxItem>
+                        </ListBoxItem>-->
                     </ListBox>
                 </materialDesign:PopupBox>
                 <StackPanel Orientation="Horizontal">

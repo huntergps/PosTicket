@@ -22,7 +22,15 @@ namespace PosTicket.ViewModel
         public ICommand GetLockResponseCommand { get; set; }
         private ReadSession readSession { get; set; }
         public ICommand LockPosCommand { get; set; }
+
         public ICommand ReprintTiketCommand { get; set; }
+        public ICommand FindTicketCommand { get; set; }
+        public ICommand PrintTicketCommand { get; set; }
+        public ICommand CancelReprintTicketCommand { get; set; }
+
+        public ICommand ReprintReceiptCommand { get; set; }
+        public ICommand PrintReceiptCommand { get; set; }
+        public ICommand CancelReprintReceiptCommand { get; set; }
         public ICommand DeleteCartCommand { get; set; }
         public ICommand KeypadCommand { get; set; }
         public ICommand KeyPayCommand { get; set; }
@@ -39,8 +47,11 @@ namespace PosTicket.ViewModel
         private ViewPayment paymentWindow { get; set; }
         private ViewLock LockWindow { get; set; }
         private ViewReprintTicket ReprintTiketWindow { get; set; }
+        private ViewReprintReceipt ReprintReceiptWindow { get; set; }
+        private ViewPermision PermisionWindow { get; set; }
         public Action CloseAction { get; set; }
         private ReadLoginResponse readLoginResponse { get; set; }
+        private ReadPrintTicketResponse readPrintTicketResponse { get; set; }
         public PosMainViewModel()
         {
 
@@ -48,7 +59,16 @@ namespace PosTicket.ViewModel
             BayarList = new ObservableCollection<PayCart>();
             CloseSessionCommand = new RelayCommand(o => CloseSessionClick("CloseSessionCommandButton"));
             LockPosCommand = new RelayCommand(o => LockPosClick("LockPosCommandButton"));
-            ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("ReprintTiketCommandButton"));
+
+            ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("PrintTiketCommandButton"));
+            FindTicketCommand = new RelayCommand(o => FindTiketClick("PrintTiketCommandButton"));
+            PrintTicketCommand = new RelayCommand(o => PrintTiketClick("ReprintTiketCommandButton"));
+            CancelReprintTicketCommand = new RelayCommand(o => CancelReprintTiketClick("CancelReprintTiketCommandButton"));
+            
+            ReprintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("ReprintReceiptCommandButton"));
+            PrintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("PrintReceiptCommandButton"));
+            CancelReprintReceiptCommand = new RelayCommand(o => CancelReprintReceiptClick("CancelReprintReceiptCommandButton"));
+            
             DeleteCartCommand = new RelayCommand(o => DeleteCartItem("DeleteCartCommandButton"));
             PaymentCommand = new RelayCommand(SetPayment);
             ClosePaymentCommand = new RelayCommand(ClosePayment);
@@ -62,13 +82,20 @@ namespace PosTicket.ViewModel
             readConfig = new ReadConfig();
             readProduct = new ReadProductResponse();
             readPayment = new ReadPaymentResponse();
+            readPrintTicketResponse = new ReadPrintTicketResponse();
             paymentWindow = new ViewPayment();
             paymentWindow.DataContext = this;
             GetLockResponseCommand = new RelayCommand(GetLockResponseClick);
+
             LockWindow = new ViewLock();
             LockWindow.DataContext = this;
             ReprintTiketWindow = new ViewReprintTicket();
             ReprintTiketWindow.DataContext = this;
+            ReprintReceiptWindow = new ViewReprintReceipt();
+            ReprintReceiptWindow.DataContext = this;
+            PermisionWindow = new ViewPermision();
+            PermisionWindow.DataContext = this;
+
             readSession = new ReadSession();
             SessionList = readSession.GetSession();
             Username = SessionList.user_name;
@@ -159,6 +186,14 @@ namespace PosTicket.ViewModel
         public void ClosePayment(object sender)
         {
             paymentWindow.Hide();
+        }
+        public void CancelReprintTiketClick(object sender)
+        {
+            ReprintTiketWindow.Hide();
+        }
+        public void CancelReprintReceiptClick(object sender)
+        {
+            ReprintReceiptWindow.Hide();
         }
         public void UpdatePayCartBayar(object sender)
         {
@@ -518,14 +553,37 @@ namespace PosTicket.ViewModel
         {
             LockWindow.ShowDialog();
         }
+        private string _numberPos;
+        public string numberPos
+        {
+            get { return _numberPos; }
+            set
+            {
+                _numberPos = value;
+                RaisePropertyChanged("numberPos");
+            }
+        }
+        private void FindTiketClick(object sender)
+        {
+            GetTicketList(numberPos);
+        }
+        private void PrintTiketClick(object sender)
+        {
+            PermisionWindow.ShowDialog();
+        }
         private void ReprintTiketClick(object sender)
         {
             ReprintTiketWindow.ShowDialog();
+        }
+        private void ReprintReceiptClick(object sender)
+        {
+            ReprintReceiptWindow.ShowDialog();
         }
         private void CloseSessionClick(object sender)
         {
             ClosePosSession(PosSessionCloseData);
         }
+
         private async void ClosePosSession(PosSessionCloseRequest _posSessionCloseRequest)
         {
             PosSessionClose posSessionCloseResponse = new PosSessionClose();
@@ -583,6 +641,52 @@ namespace PosTicket.ViewModel
             IpAddressValue = ConfigList[0].current_ip;
             PosSessionCloseData = new PosSessionCloseRequest { data = new PosSessionCloseRequestData { pos_ip = IpAddressValue } };
         }
+
+        private ListTicketResponse _SelectedTicketList;
+        public ListTicketResponse SelectedTicketList
+        {
+            get
+            {
+                return _SelectedTicketList;
+            }
+            set
+            {
+                _SelectedTicketList = value;
+                RaisePropertyChanged("SelectedTicketList");
+                RaisePropertyChanged("TicketList");
+            }
+        }
+
+        private ObservableCollection<ListTicketResponse> _TicketList;
+        public ObservableCollection<ListTicketResponse> TicketList
+        {
+            get { return _TicketList; }
+            set
+            {
+                _TicketList = value;
+                RaisePropertyChanged("_TicketList");
+            }
+        }
+        private async void GetTicketList(string _salesnumber)
+        {
+            readPrintTicketResponse = new ReadPrintTicketResponse();
+            ReprintTicketResponse PrintTicketResponse = await readPrintTicketResponse.GetListTicketBySale(_salesnumber);
+            if (PrintTicketResponse.result[0].error == null)
+            {
+                
+                foreach(ListTicketResponse listTicketResponse in PrintTicketResponse.result)
+                {
+                    TicketList.Add(listTicketResponse);
+                }
+                
+            }
+            else
+            {
+                MaterialMessageBox.ShowDialog(PrintTicketResponse.result[0].error.message.ToString(), PrintTicketResponse.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+            }
+
+        }
+
         private async void SendPaymentData(object sender)
         {
 
