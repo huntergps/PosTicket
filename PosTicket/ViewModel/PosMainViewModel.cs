@@ -121,6 +121,17 @@ namespace PosTicket.ViewModel
         public string Username { get; set; }
         public string Userlogin { get; set; }
 
+        private ProductCategoryData _selectedCategory;
+        public ProductCategoryData SelectedCategory
+        {
+            get { return _selectedCategory; }
+            set
+            {
+                _selectedCategory = value;
+                RaisePropertyChanged("SelectedCategory");
+            }
+        }
+
         public string _passwordValue;
         public string Password
         {
@@ -697,6 +708,7 @@ namespace PosTicket.ViewModel
                 }
             }
             ProductCategoryList = productCategoryDatas;
+            SelectedCategory = ProductCategoryList[0];
         }
         public void ViewLoaded()
         {

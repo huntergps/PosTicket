@@ -178,7 +178,7 @@
                 </Grid>
                 <Grid Grid.Column="1">
                     <materialDesign:Card x:Name="cardProduct" Background="{DynamicResource MaterialDesignBackground}" Margin="0 5 5 0" VerticalAlignment="Stretch">
-                        <TabControl ItemsSource="{Binding ProductCategoryList}">
+                        <TabControl ItemsSource="{Binding ProductCategoryList}" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
                             <TabControl.ItemTemplate>
                                 <DataTemplate>
                                     <WrapPanel>
