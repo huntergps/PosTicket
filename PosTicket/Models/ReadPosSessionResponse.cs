@@ -18,5 +18,10 @@ namespace PosTicket.Models
             Repository = new PosSessionRepository();
             return await Repository.ClosePoseSessionAsync(posSessionCloseRequest);
         }
+        public async Task<PosSessionClose> GetPosSessionSummary(string ip_address)
+        {
+            Repository = new PosSessionRepository();
+            return await Repository.GetPosSessionSummary(ip_address);
+        }
     }
 }
