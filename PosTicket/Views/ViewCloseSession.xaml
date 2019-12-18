@@ -5,8 +5,54 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PosTicket.Views"
         mc:Ignorable="d"
-        Title="ViewCloseSession" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="ViewCloseSession" Height="450" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None">
+    <Border CornerRadius="5" BorderBrush="#FFAAAAAA" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="7*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="60*"/>
+                <RowDefinition Height="20*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="SlateBlue" >
+                <TextBlock Text=":. Clossing Point of Sales .:" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" />
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="6*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="50*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Opening Cash Balance"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="Sales Cash Balance"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="Total Cash Balance"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="Sales Non Cash"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="Total Sales"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="Total Tiket"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="Total Tiket by Category"  VerticalAlignment="Top"   FontWeight="Bold" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="2" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="4" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="5" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="7" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="8" Grid.Column="2" Text=":"  VerticalAlignment="Top"   FontWeight="Bold" />
+            </Grid>
+        </Grid>
+    </Border>
 </Window>
