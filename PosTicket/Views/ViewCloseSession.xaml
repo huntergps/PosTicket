@@ -13,6 +13,8 @@
                 <RowDefinition Height="3*"/>
                 <RowDefinition Height="60*"/>
                 <RowDefinition Height="20*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="3*"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Background="SlateBlue" >
@@ -36,7 +38,7 @@
                     <RowDefinition Height="12*"/>
                     <RowDefinition Height="5*"/>
                     <RowDefinition Height="12*"/>
-                    <RowDefinition Height="50*"/>
+                    <RowDefinition Height="12*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="Opening Cash Balance"  VerticalAlignment="Center"   FontWeight="Bold" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="Sales Cash Balance"  VerticalAlignment="Center"   FontWeight="Bold" />
@@ -52,6 +54,24 @@
                 <TextBlock Grid.Row="5" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
                 <TextBlock Grid.Row="7" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
                 <TextBlock Grid.Row="8" Grid.Column="2" Text=":"  VerticalAlignment="Top"   FontWeight="Bold" />
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding opening_cash_balance}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding amount_sale_cash}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding amount_sale_cash}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding amount_sale_non_cash}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding amount_sale}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding count_ticket}"   VerticalAlignment="Center"   FontWeight="Bold" />
+            </Grid>
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="6*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="1" Content="OK" Margin="2 2 2 2" Height="60"  Command="{Binding ClosePOSCommand}"/>
+                <Button Grid.Column="3" Content="Cancel" Margin="2 2 2 2" Height="60" Command="{Binding CancelCloseSessionCommand}"/>
+
             </Grid>
         </Grid>
     </Border>

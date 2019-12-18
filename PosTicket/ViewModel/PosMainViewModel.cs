@@ -19,6 +19,8 @@ namespace PosTicket.ViewModel
     public class PosMainViewModel : NavigableControlViewModel
     {
         public ICommand CloseSessionCommand { get; set; }
+        public ICommand ClosePOSCommand { get; set; }
+        public ICommand CancelCloseSessionCommand { get; set; }
         public ICommand GetLockResponseCommand { get; set; }
         private ReadSession readSession { get; set; }
         public ICommand LockPosCommand { get; set; }
@@ -50,6 +52,7 @@ namespace PosTicket.ViewModel
         private ViewReprintTicket ReprintTiketWindow { get; set; }
         private ViewReprintReceipt ReprintReceiptWindow { get; set; }
         private ViewPermision PermisionWindow { get; set; }
+        private ViewCloseSession CloseSessionWindow { get; set; }
         public Action CloseAction { get; set; }
         private ReadLoginResponse readLoginResponse { get; set; }
         private ReadPrintTicketResponse readPrintTicketResponse { get; set; }
@@ -60,6 +63,8 @@ namespace PosTicket.ViewModel
             CartList = new ObservableCollection<Cart>();
             BayarList = new ObservableCollection<PayCart>();
             CloseSessionCommand = new RelayCommand(o => CloseSessionClick("CloseSessionCommandButton"));
+            ClosePOSCommand = new RelayCommand(o => ClosePOSClick("CloseSessionCommandButton"));
+            CancelCloseSessionCommand = new RelayCommand(o => CancelCloseSessionClick("CloseSessionCommandButton"));
             LockPosCommand = new RelayCommand(o => LockPosClick("LockPosCommandButton"));
 
             ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("PrintTiketCommandButton"));
@@ -71,6 +76,7 @@ namespace PosTicket.ViewModel
             FindReceiptCommand = new RelayCommand(o => FindReceiptClick("FindReceiptCommandButton"));
             PrintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("PrintReceiptCommandButton"));
             CancelReprintReceiptCommand = new RelayCommand(o => CancelReprintReceiptClick("CancelReprintReceiptCommandButton"));
+            
             
             DeleteCartCommand = new RelayCommand(o => DeleteCartItem("DeleteCartCommandButton"));
             PaymentCommand = new RelayCommand(SetPayment);
@@ -98,6 +104,8 @@ namespace PosTicket.ViewModel
             ReprintReceiptWindow.DataContext = this;
             PermisionWindow = new ViewPermision();
             PermisionWindow.DataContext = this;
+            CloseSessionWindow = new ViewCloseSession();
+            CloseSessionWindow.DataContext = this;
 
             readSession = new ReadSession();
             SessionList = readSession.GetSession();
@@ -167,7 +175,29 @@ namespace PosTicket.ViewModel
                 PaymentMethodList.Add(paymentData);
             }
         }
-
+        public decimal opening_cash_balance { get; set; }
+        public decimal amount_sale_cash { get; set; }
+        public decimal amount_sale_non_cash { get; set; }
+        public decimal amount_sale { get; set; }
+        public int count_ticket { get; set; }
+        private async void GetPosSessionSummary()
+        {
+            PosSessionClose posSessionCloseResponse = new PosSessionClose();
+            ReadPosSessionResponse closePosSession = new ReadPosSessionResponse();
+            posSessionCloseResponse = await closePosSession.GetPosSessionSummary(IpAddressValue);
+            if (posSessionCloseResponse.result.error == null)
+            {
+                opening_cash_balance = decimal.Parse(posSessionCloseResponse.result.opening_cash_balance.ToString());
+                amount_sale_cash = decimal.Parse(posSessionCloseResponse.result.amount_sale_cash.ToString()); 
+                amount_sale = decimal.Parse(posSessionCloseResponse.result.amount_sale.ToString());
+                amount_sale_non_cash = decimal.Parse(posSessionCloseResponse.result.amount_sale_non_cash.ToString());
+                count_ticket = int.Parse(posSessionCloseResponse.result.count_ticket.ToString());
+            }
+            else
+            {
+                MaterialMessageBox.ShowDialog(posSessionCloseResponse.result.error.message, posSessionCloseResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+            }
+        }
         public void AddToPayCart(PayCart sender)
         {
 
@@ -198,6 +228,8 @@ namespace PosTicket.ViewModel
         }
         public void CancelReprintReceiptClick(object sender)
         {
+            ReceiptList.Clear();
+            numberReceipt = "";
             ReprintReceiptWindow.Hide();
         }
         public void UpdatePayCartBayar(object sender)
@@ -534,6 +566,8 @@ namespace PosTicket.ViewModel
                 RaisePropertyChanged("PosSessionCloseRequest");
             }
         }
+
+
         private PosSessionClose _posSessionCloseResponse;
         public PosSessionClose PosSessionCloseResponse
         {
@@ -598,9 +632,20 @@ namespace PosTicket.ViewModel
         {
             ReprintReceiptWindow.ShowDialog();
         }
+        
         private void CloseSessionClick(object sender)
+        {            
+            GetPosSessionSummary();
+            CloseSessionWindow.ShowDialog();
+        }
+        private void ClosePOSClick(object sender)
         {
+            
             ClosePosSession(PosSessionCloseData);
+        }
+        private void CancelCloseSessionClick(object sender)
+        {
+            CloseSessionWindow.Hide();
         }
 
         private async void ClosePosSession(PosSessionCloseRequest _posSessionCloseRequest)
