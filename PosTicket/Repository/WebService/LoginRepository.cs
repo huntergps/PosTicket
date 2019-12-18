@@ -17,9 +17,25 @@ namespace PosTicket.Repository.WebService
             RestRequest request = (RestRequest)WebServiceContext.GetRequestBody("post");
 
             request.AddParameter("application/json", JsonConvert.SerializeObject(loginRequest), ParameterType.RequestBody);
-            IRestResponse response = await client.ExecuteTaskAsync(request);
-            LoginResponse loginResponse = JsonConvert.DeserializeObject<LoginResponse>(response.Content);
-            return loginResponse;
+            try
+            {
+                IRestResponse response = await client.ExecuteTaskAsync(request);
+                if (response.StatusCode == System.Net.HttpStatusCode.BadGateway)
+                {
+                    LoginResponse loginResponse = new LoginResponse { error=new ErrorMessage {code =502,message= response.StatusDescription } };
+                    return loginResponse;
+                }
+                else
+                {
+                    LoginResponse loginResponse = JsonConvert.DeserializeObject<LoginResponse>(response.Content);
+                    return loginResponse;
+                }
+            }
+            catch(Exception e)
+            {
+                LoginResponse loginResponse = new LoginResponse { error = new ErrorMessage { code = 400, message = e.Message } };
+                return loginResponse;
+            }
         }
     }
 }
