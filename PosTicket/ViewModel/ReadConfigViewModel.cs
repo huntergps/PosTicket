@@ -8,6 +8,8 @@ using PosTicket.Models;
 using System.Windows;
 using System.Collections.Generic;
 using System.Threading;
+using System.Net.NetworkInformation;
+using System.Net;
 
 namespace PosTicket.ViewModel
 {
@@ -25,6 +27,27 @@ namespace PosTicket.ViewModel
             SaveConfigCommand = new RelayCommand(SaveConfigClick);
             readConfig = new ReadConfig();
             readPrinter = new ReadPrinter();
+            GetLocalIpAddresses();
+        }
+        public void GetLocalIpAddresses()
+        {
+            IpAddressList = new List<string>();
+            String strHostName = Dns.GetHostName();
+            IPHostEntry iphostentry = Dns.GetHostEntry(strHostName);
+            foreach (IPAddress ipaddress in iphostentry.AddressList)
+            {
+                IpAddressList.Add(ipaddress.ToString());
+            }
+        }
+        private List<string> _ipAddressList;
+        public List<string> IpAddressList
+        {
+            get { return _ipAddressList; }
+            set
+            {
+                _ipAddressList = value;
+                RaisePropertyChanged("IpAddressList");
+            }
         }
         private void CloseWindow(object sender)
         {
