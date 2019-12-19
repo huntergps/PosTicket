@@ -37,17 +37,17 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"  Text="USER SUPERVISOR" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" FontSize="18"/>
 
-                <TextBox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" x:Name="txtLogin" materialDesign:HintAssist.Hint="USERNAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  FontFamily="Champagne &amp; Limousines" FontSize="18" />
+                <TextBox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" x:Name="txtLoginSupervisor" materialDesign:HintAssist.Hint="USERNAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  FontFamily="Champagne &amp; Limousines" FontSize="18" Text="{Binding UsernameValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 <StackPanel Grid.Row="2"  VerticalAlignment="Center" HorizontalAlignment="Center" Width="250">
-                    <PasswordBox x:Name="txtPasswd" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" FontFamily="Champagne &amp; Limousines" FontSize="18" PasswordChanged="PasswordBox_PasswordChanged"  />
+                    <PasswordBox x:Name="txtPasswdSupervisor" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" FontFamily="Champagne &amp; Limousines" FontSize="18" PasswordChanged="PasswordBox_PasswordChanged"  />
                 </StackPanel>
                 <Grid Grid.Row="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50*"/>
                         <ColumnDefinition Width="50*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Command="{Binding GetPermisionResponseCommand}" Grid.Column="0"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Proses" Name="PermisionButton" Width="120" Height="50"  FontSize="18"/>
-                    <Button Command="{Binding CancelPermisionResponseCommand}" Grid.Column="1"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Cancel" Name="CancelPermisionButton" Width="120" Height="50"  FontSize="18"/>
+                    <Button Command="{Binding GetPermisionCommand}" Grid.Column="0"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Proses" Name="PermisionButton" Width="120" Height="50"  FontSize="18"/>
+                    <Button Command="{Binding CancelPermisionCommand}" Grid.Column="1"  VerticalAlignment="Center"  HorizontalAlignment="Center" Content="Cancel" Name="CancelPermisionButton" Width="120" Height="50"  FontSize="18"/>
                 </Grid>
             </Grid>
 

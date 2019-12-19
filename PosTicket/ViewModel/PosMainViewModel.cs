@@ -29,6 +29,8 @@ namespace PosTicket.ViewModel
         public ICommand FindTicketCommand { get; set; }
         public ICommand PrintTicketCommand { get; set; }
         public ICommand CancelReprintTicketCommand { get; set; }
+        public ICommand GetPermisionCommand { get; set; }
+        public ICommand CancelPermisionCommand { get; set; }
 
         public ICommand ReprintReceiptCommand { get; set; }
         public ICommand FindReceiptCommand { get; set; }
@@ -47,6 +49,7 @@ namespace PosTicket.ViewModel
         private ReadConfig readConfig { get; set; }
         private ReadProductResponse readProduct { get; set; }
         private ReadPaymentResponse readPayment { get; set; }
+        private PrintTicketResponse RePrintTicket { get; set; }
         private ViewPayment paymentWindow { get; set; }
         private ViewLock LockWindow { get; set; }
         private ViewReprintTicket ReprintTiketWindow { get; set; }
@@ -68,12 +71,14 @@ namespace PosTicket.ViewModel
             LockPosCommand = new RelayCommand(o => LockPosClick("LockPosCommandButton"));
 
             ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("PrintTiketCommandButton"));
+            GetPermisionCommand = new RelayCommand(o => GetPermisionClick("PrintTiketCommandButton"));
             FindTicketCommand = new RelayCommand(o => FindTiketClick("FindTiketCommandButton"));
             PrintTicketCommand = new RelayCommand(o => PrintTiketClick("ReprintTiketCommandButton"));
             CancelReprintTicketCommand = new RelayCommand(o => CancelReprintTiketClick("CancelReprintTiketCommandButton"));
+            CancelPermisionCommand = new RelayCommand(o => CancelPermisionClick("CancelPermisionCommandButton"));
             
             ReprintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("ReprintReceiptCommandButton"));
-            FindReceiptCommand = new RelayCommand(o => FindReceiptClick("FindReceiptCommandButton"));
+            FindReceiptCommand = new RelayCommand(o => FindReceiptClick());
             PrintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("PrintReceiptCommandButton"));
             CancelReprintReceiptCommand = new RelayCommand(o => CancelReprintReceiptClick("CancelReprintReceiptCommandButton"));
             
@@ -112,7 +117,7 @@ namespace PosTicket.ViewModel
             Username = SessionList.user_name;
             Userlogin= SessionList.user_login;
             PaymentMethodList = new List<PaymentData>();
-            TicketList = new ObservableCollection<ListTicketResponse>();
+            TicketList = new ObservableCollection<CartTicket>();
             ReceiptList = new ObservableCollection<ListReceiptResponse>();
             GetPaymentMethod();
         }
@@ -129,6 +134,17 @@ namespace PosTicket.ViewModel
             {
                 _selectedCategory = value;
                 RaisePropertyChanged("SelectedCategory");
+            }
+        }
+
+        private string _usernameValue;
+        public string UsernameValue
+        {
+            get { return _usernameValue; }
+            set
+            {
+                _usernameValue = value;
+                RaisePropertyChanged("UsernameValue");
             }
         }
 
@@ -154,6 +170,45 @@ namespace PosTicket.ViewModel
             BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "" });
             RaisePropertyChanged("BayarList");
             paymentWindow.ShowDialog();
+        }
+        private async void GetPermisionClick(object sender)
+        {
+            List<int> ticket_ids = new List<int>();
+            foreach (CartTicket DataTicket in TicketList)
+            {
+                if (DataTicket.flagprint == true)
+                {
+                    ticket_ids.Add(DataTicket.id);
+                }
+            }
+
+            PrintTicketRequest _TicketRequest = new PrintTicketRequest
+            {
+                username = UsernameValue,
+                password = Password,
+                ticket_ids= ticket_ids
+
+            };
+            readPrintTicketResponse = new ReadPrintTicketResponse();
+            PrintTicketResponse RePrintTicketResponse = await readPrintTicketResponse.PostPrintTicketRequest(_TicketRequest);
+            if (RePrintTicketResponse.result[0].error == null)
+            {
+                PrinterRepository printerRepository = new PrinterRepository();
+                await printerRepository.CetakTicket(ConfigList[0].ticket_printer, RePrintTicketResponse.result);
+                UsernameValue = "";
+                Password = "";
+                TicketList.Clear();
+                numberPos = "";
+                PermisionWindow.Hide();
+                ReprintTiketWindow.Hide();
+            }
+            else
+            {
+                MaterialMessageBox.ShowDialog(RePrintTicketResponse.result[0].error.message, RePrintTicketResponse.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+                UsernameValue = "";
+                Password = "";
+            }
+            
         }
         private void GetLockResponseClick(object sender)
         {
@@ -235,7 +290,14 @@ namespace PosTicket.ViewModel
         }
         public void CancelReprintTiketClick(object sender)
         {
+            TicketList.Clear();
+            numberPos = "";
             ReprintTiketWindow.Hide();
+        }
+        public void CancelPermisionClick(object sender)
+        {
+            UsernameValue = "";
+            PermisionWindow.Hide();
         }
         public void CancelReprintReceiptClick(object sender)
         {
@@ -627,6 +689,22 @@ namespace PosTicket.ViewModel
         {
             GetTicketList(numberPos);
         }
+        private PrintTicketRequest _printTicketRequest;
+        public PrintTicketRequest PrintTicketRequestData
+        {
+            get { return _printTicketRequest; }
+            set
+            {
+                _printTicketRequest = value;
+                RaisePropertyChanged("PrintTicketRequestData");
+            }
+        }
+        private void GetPrintTiketClick(object sender)
+        {
+            PrintTicketRequestData = new PrintTicketRequest();
+
+            GetTicketList(numberPos);
+        }
         private void PrintTiketClick(object sender)
         {
             PermisionWindow.ShowDialog();
@@ -635,7 +713,7 @@ namespace PosTicket.ViewModel
         {
             ReprintTiketWindow.ShowDialog();
         }
-        private void FindReceiptClick(object sender)
+        private void FindReceiptClick()
         {
             GetReceiptList(numberReceipt);
         }
@@ -666,7 +744,7 @@ namespace PosTicket.ViewModel
             posSessionCloseResponse = await closePosSession.ClosePosSessionAsync(_posSessionCloseRequest);
             if (posSessionCloseResponse.result.error == null)
             {
-                CloseAction();
+                System.Windows.Application.Current.Shutdown(); ;
             }
             else
             {
@@ -733,8 +811,8 @@ namespace PosTicket.ViewModel
             }
         }
 
-        private ObservableCollection<ListTicketResponse> _TicketList;
-        public ObservableCollection<ListTicketResponse> TicketList
+        private ObservableCollection<CartTicket> _TicketList;
+        public ObservableCollection<CartTicket> TicketList
         {
             get { return _TicketList; }
             set
@@ -752,7 +830,10 @@ namespace PosTicket.ViewModel
                 
                 foreach(ListTicketResponse listTicketResponse in PrintTicketResponse.result)
                 {
-                    TicketList.Add(listTicketResponse);
+                    TicketList.Add( new CartTicket { id = listTicketResponse.id, barcode = listTicketResponse.barcode,
+                                                    product_name = listTicketResponse.product_name,date_plan = listTicketResponse.date_plan,
+                                                    state = listTicketResponse.state,flagprint=false
+                                                    });
                 }
                 
             }
@@ -845,6 +926,7 @@ namespace PosTicket.ViewModel
                     line4 = "           Struk Pembelian Ticket         ",
                     line5 = "========================================",
                     line6 = (char)27+"@"+ (char)27+"p"+(char)0+".}"
+                    
                 }) ;
                 await printerRepository.CetakTicket(ConfigList[0].ticket_printer, paymentResponse.result.tickets);
                 //close payment window

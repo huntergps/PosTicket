@@ -54,12 +54,12 @@
                 <TextBlock Grid.Row="5" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
                 <TextBlock Grid.Row="7" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
                 <TextBlock Grid.Row="8" Grid.Column="2" Text=":"  VerticalAlignment="Top"   FontWeight="Bold" />
-                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding opening_cash_balance}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding amount_sale_cash}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding amount_sale_cash}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding amount_sale_non_cash}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding amount_sale}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding count_ticket}"   VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding opening_cash_balance, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding amount_sale_cash, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding amount_sale_cash, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding amount_sale_non_cash, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding amount_sale, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding count_ticket, StringFormat='0,0'}"   VerticalAlignment="Center"   FontWeight="Bold" />
             </Grid>
             <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>

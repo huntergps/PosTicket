@@ -14,5 +14,6 @@ namespace PosTicket.Repository.Interface
         public string line4 { get; set; }
         public string line5 { get; set; }
         public string line6 { get; set; }
+        public ErrorMessage error { get; set; }
     }
 }

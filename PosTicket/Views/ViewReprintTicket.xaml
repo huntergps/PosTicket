@@ -43,7 +43,7 @@
                             <GridViewColumn Header="Cetak" Width="80">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox Command="{Binding DelToPayCartCommand}"  />
+                                        <CheckBox IsChecked="{Binding flagprint, Mode=TwoWay}"  />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

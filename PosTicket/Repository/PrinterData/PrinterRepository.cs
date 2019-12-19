@@ -156,6 +156,7 @@ namespace PosTicket.Repository.PrinterData
             label.AppendLine(data.line4);
             label.AppendLine(data.line5);
             label.AppendLine(data.line6);
+            label.AppendLine("\x1b" + "\x69");
             SendStringToPrinter(printerName, label.ToString());
             return true;
         }
