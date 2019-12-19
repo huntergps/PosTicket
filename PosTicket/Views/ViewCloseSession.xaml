@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PosTicket.Views"
         mc:Ignorable="d"
-        Title="ViewCloseSession" Height="450" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None">
+        Title="ViewCloseSession" Height="450" Width="370" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None">
     <Border CornerRadius="5" BorderBrush="#FFAAAAAA" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
@@ -54,12 +54,12 @@
                 <TextBlock Grid.Row="5" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
                 <TextBlock Grid.Row="7" Grid.Column="2" Text=":"  VerticalAlignment="Center"   FontWeight="Bold" />
                 <TextBlock Grid.Row="8" Grid.Column="2" Text=":"  VerticalAlignment="Top"   FontWeight="Bold" />
-                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding opening_cash_balance, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding amount_sale_cash, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding amount_sale_cash, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding amount_sale_non_cash, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding amount_sale, StringFormat='0,0'}"  VerticalAlignment="Center"   FontWeight="Bold" />
-                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding count_ticket, StringFormat='0,0'}"   VerticalAlignment="Center"   FontWeight="Bold" />
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding opening_cash_balance, StringFormat='0,0'}"  VerticalAlignment="Center" HorizontalAlignment="Right"  FontWeight="Bold" />
+                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding amount_sale_cash, StringFormat='0,0'}"  VerticalAlignment="Center" HorizontalAlignment="Right"  FontWeight="Bold" />
+                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding amount_sale_cash, StringFormat='0,0'}"  VerticalAlignment="Center" HorizontalAlignment="Right"  FontWeight="Bold" />
+                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding amount_sale_non_cash, StringFormat='0,0'}"  VerticalAlignment="Center" HorizontalAlignment="Right"  FontWeight="Bold" />
+                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding amount_sale, StringFormat='0,0'}"  VerticalAlignment="Center" HorizontalAlignment="Right"  FontWeight="Bold" />
+                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding count_ticket, StringFormat='0,0'}"   VerticalAlignment="Center" HorizontalAlignment="Right"  FontWeight="Bold" />
             </Grid>
             <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
