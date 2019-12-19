@@ -7,7 +7,7 @@ namespace PosTicket.Repository.Interface
 {
     public class Customer
     {
-        public List<SalesPersonData> result { get; set; }
+        public List<CustomerData> result { get; set; }
         public string version { get; set; }
     }
     public class CustomerData

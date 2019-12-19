@@ -12,6 +12,8 @@ namespace PosTicket.Repository.Interface
         public string date_plan { get; set; }
         public List<PaymentTransactionLineData> line_ids { get; set; }
         public List<PaymentTransactionPaymentData> payment_ids { get; set; }
+        public int salesperson_id { get; set; }
+        public int partner_id { get; set; }
 
     }
     public class PaymentTransactionLineData

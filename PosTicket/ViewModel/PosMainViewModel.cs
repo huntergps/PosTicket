@@ -25,6 +25,20 @@ namespace PosTicket.ViewModel
         private ReadSession readSession { get; set; }
         public ICommand LockPosCommand { get; set; }
 
+        //sales
+        public ICommand SalesCommand { get; set; }
+        public ICommand PilihSalesCommand { get; set; }
+        public ICommand CancelSalesCommand { get; set; }
+        private ViewSales ViewSalesWindow { get; set; }
+        // sales
+
+        //Pelanggan
+        public ICommand PelangganCommand { get; set; }
+        public ICommand PilihPelangganCommand { get; set; }
+        public ICommand CancelPelangganCommand { get; set; }
+        private ViewCustomer ViewCustomerWindow { get; set; }
+
+        //Pelanggan
         public ICommand ReprintTiketCommand { get; set; }
         public ICommand FindTicketCommand { get; set; }
         public ICommand PrintTicketCommand { get; set; }
@@ -69,6 +83,17 @@ namespace PosTicket.ViewModel
             ClosePOSCommand = new RelayCommand(o => ClosePOSClick("CloseSessionCommandButton"));
             CancelCloseSessionCommand = new RelayCommand(o => CancelCloseSessionClick("CloseSessionCommandButton"));
             LockPosCommand = new RelayCommand(o => LockPosClick("LockPosCommandButton"));
+            //sales
+            SalesCommand = new RelayCommand(o => SalesClick("SalesCommandButton"));
+            PilihSalesCommand = new RelayCommand(o => PilihSalesClick("PilihSalesButton"));
+            CancelSalesCommand = new RelayCommand(o => CancelSalesClick("CancelSalesButton"));
+            //sales
+
+            //Pelanggan
+            PelangganCommand = new RelayCommand(o => PelangganClick("PelangganCommandButton"));
+            PilihPelangganCommand = new RelayCommand(o => PilihPelangganClick("PilihPelangganCommandButton"));
+            CancelPelangganCommand = new RelayCommand(o => CancelPelangganClick("CancelPelangganButton"));
+            //Pelanggan
 
             ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("PrintTiketCommandButton"));
             GetPermisionCommand = new RelayCommand(o => GetPermisionClick("PrintTiketCommandButton"));
@@ -111,6 +136,10 @@ namespace PosTicket.ViewModel
             PermisionWindow.DataContext = this;
             CloseSessionWindow = new ViewCloseSession();
             CloseSessionWindow.DataContext = this;
+            ViewSalesWindow = new ViewSales();
+            ViewSalesWindow.DataContext = this;
+            ViewCustomerWindow = new ViewCustomer();
+            ViewCustomerWindow.DataContext = this;
 
             readSession = new ReadSession();
             SessionList = readSession.GetSession();
@@ -120,6 +149,8 @@ namespace PosTicket.ViewModel
             TicketList = new ObservableCollection<CartTicket>();
             ReceiptList = new ObservableCollection<ListReceiptResponse>();
             GetPaymentMethod();
+            SelectedSalesPerson = new SalesPersonData();
+            SelectedPelanggan = new CustomerData();
         }
 
         private int staticnum = -1;
@@ -705,6 +736,85 @@ namespace PosTicket.ViewModel
 
             GetTicketList(numberPos);
         }
+        private ObservableCollection<SalesPersonData> _SalesList;
+        public ObservableCollection<SalesPersonData> SalesList
+        {
+            get { return _SalesList; }
+            set
+            {
+                _SalesList = value;
+                RaisePropertyChanged("_SalesList");
+            }
+        }
+        private ObservableCollection<CustomerData> _PelangganList;
+        public ObservableCollection<CustomerData> PelangganList
+        {
+            get { return _PelangganList; }
+            set
+            {
+                _PelangganList = value;
+                RaisePropertyChanged("_PelangganList");
+            }
+        }
+        private async void SalesClick(object sender)
+        {
+            ReadPartnerResponse readSalesResponse = new ReadPartnerResponse();
+            SalesPerson salesPerson = await readSalesResponse.GetSalesPersonAsync();
+            SalesList = new ObservableCollection<SalesPersonData>();
+            if (salesPerson.result[0].error == null)
+            {
+                foreach (SalesPersonData ListsalesPerson in salesPerson.result)
+                {
+                    SalesList.Add(ListsalesPerson);
+                }
+                ViewSalesWindow.ShowDialog();
+            } else
+            {
+                MaterialMessageBox.ShowDialog(salesPerson.result[0].error.message, salesPerson.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+            }
+
+
+        }
+        private async void PelangganClick(object sender)
+        {
+            ReadPartnerResponse readCostumerRespone = new ReadPartnerResponse();
+            Customer Pelanggan = await readCostumerRespone.GetCustomerAsync();
+            PelangganList = new ObservableCollection<CustomerData>();
+            if (Pelanggan.result[0].error == null)
+            {
+                foreach (CustomerData ListdataPelanggan in Pelanggan.result)
+                {
+                    PelangganList.Add(ListdataPelanggan);
+                }
+                ViewCustomerWindow.ShowDialog();
+            }
+            else
+            {
+                MaterialMessageBox.ShowDialog(Pelanggan.result[0].error.message, Pelanggan.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+            }
+
+
+        }
+        private void PilihSalesClick(object sender)
+        {
+            
+            ViewSalesWindow.Hide();
+        }
+        private void PilihPelangganClick(object sender)
+        {
+
+            ViewCustomerWindow.Hide();
+        }
+        private void CancelSalesClick(object sender)
+        {
+            SelectedSalesPerson= null;
+            ViewSalesWindow.Hide();
+        }
+        private void CancelPelangganClick(object sender)
+        {
+            SelectedPelanggan = null;
+            ViewCustomerWindow.Hide();
+        }
         private void PrintTiketClick(object sender)
         {
             PermisionWindow.ShowDialog();
@@ -795,7 +905,62 @@ namespace PosTicket.ViewModel
             IpAddressValue = ConfigList[0].current_ip;
             PosSessionCloseData = new PosSessionCloseRequest { data = new PosSessionCloseRequestData { pos_ip = IpAddressValue } };
         }
+        public string salesname {
+            get 
+            {
+                if (SelectedSalesPerson != null)
+                { 
+                    return SelectedSalesPerson.name; 
+                } else
+                {
+                    return "POS Sales";
+                }
 
+            }
+            set { } }
+
+        private SalesPersonData _SelectedSalesPerson;
+        public SalesPersonData SelectedSalesPerson
+        {
+            get
+            {
+                return _SelectedSalesPerson;
+            }
+            set
+            {
+                _SelectedSalesPerson = value;
+                RaisePropertyChanged("SelectedSalesPerson");
+            }
+        }
+        public string namepelanggan
+        {
+            get
+            {
+                if (SelectedPelanggan != null)
+                {
+                    return SelectedPelanggan.name;
+                }
+                else
+                {
+                    return "Pelanggan Umum";
+                }
+
+            }
+            set { }
+        }
+        private CustomerData _SelectedPelanggan;
+        public CustomerData SelectedPelanggan
+        {
+            get
+            {
+                return _SelectedPelanggan;
+            }
+            set
+            {
+                _SelectedPelanggan = value;
+                RaisePropertyChanged("SelectedPelanggan");
+            }
+        }
         private ListTicketResponse _SelectedTicketList;
         public ListTicketResponse SelectedTicketList
         {
@@ -888,7 +1053,7 @@ namespace PosTicket.ViewModel
                     product_price_id = transactionLine.product_price_id,
                     qty = transactionLine.qty,
                     qty_bonus = 0,
-                    price_unit = transactionLine.price
+                    price_unit = transactionLine.price,
                 });
             }
 
@@ -912,7 +1077,9 @@ namespace PosTicket.ViewModel
                 pos_ip = IpAddressValue,
                 date_plan = DateTime.Now.ToString("yyyy-MM-dd"),
                 line_ids = lineTransaksi,
-                payment_ids = linePayment
+                payment_ids = linePayment,
+                salesperson_id = SelectedSalesPerson.id,
+                partner_id = SelectedPelanggan.id
             };
             PaymentTransactionResponse paymentResponse = await readPayment.PostTransactionPayment(paymentTransactionRequest);
             if (paymentResponse.result != null || paymentResponse.error == null)
