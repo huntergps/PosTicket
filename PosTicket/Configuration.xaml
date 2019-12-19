@@ -48,7 +48,17 @@
                         </Binding>
                     </ComboBox.SelectedItem>
                 </ComboBox>
-                <TextBox x:Name="txtIPAddress" materialDesign:HintAssist.Hint="IP Address" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,10" FontFamily="Champagne &amp; Limousines" FontSize="18" Text="{Binding IpAddressValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <ComboBox materialDesign:HintAssist.Hint="IP Address" Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+                          Margin="0,10" 
+                          FontFamily="Champagne &amp; Limousines" 
+                          FontSize="18"
+                          ItemsSource="{Binding IpAddressList}"
+                          SelectedValue="{Binding IpAddressValue}">
+                    <ComboBox.SelectedItem>
+                        <Binding Path="IpAddressValue" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        </Binding>
+                    </ComboBox.SelectedItem>
+                </ComboBox>
                 <PasswordBox x:Name="txtApi" materialDesign:HintAssist.Hint="API Key - Fill to Change API Key" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" Margin="0,10" FontFamily="Champagne &amp; Limousines" FontSize="18" PasswordChanged="ApiKey_PasswordChanged"/>
             </StackPanel>
         </Grid>
