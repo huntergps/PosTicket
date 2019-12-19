@@ -8,7 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using PosTicket.Models;
-
+using Newtonsoft.Json;
+using RestSharp;
 
 namespace PosTicket.Repository.PrinterData
 {
@@ -74,33 +75,36 @@ namespace PosTicket.Repository.PrinterData
             IntPtr hPrinter = new IntPtr(0);
             DOCINFOA di = new DOCINFOA();
             bool bSuccess = false; // Assume failure unless you specifically succeed.
-
-            di.pDocName = "Saloka Ticket Document";
-            di.pDataType = "RAW";
-
-            // Open the printer.
-            if (OpenPrinter(szPrinterName.Normalize(), out hPrinter, IntPtr.Zero))
+            try
             {
-                // Start a document.
-                if (StartDocPrinter(hPrinter, 1, di))
+                di.pDocName = "Saloka Ticket Document";
+                di.pDataType = "XPS_PASS";
+
+                // Open the printer.
+                if (OpenPrinter(szPrinterName.Normalize(), out hPrinter, IntPtr.Zero))
                 {
-                    // Start a page.
-                    if (StartPagePrinter(hPrinter))
+                    // Start a document.
+                    if (StartDocPrinter(hPrinter, 1, di))
                     {
-                        // Write your bytes.
-                        bSuccess = WritePrinter(hPrinter, pBytes, dwCount, out dwWritten);
-                        EndPagePrinter(hPrinter);
+                        // Start a page.
+                        if (StartPagePrinter(hPrinter))
+                        {
+                            // Write your bytes.
+                            bSuccess = WritePrinter(hPrinter, pBytes, dwCount, out dwWritten);
+                            EndPagePrinter(hPrinter);
+                        }
+                        EndDocPrinter(hPrinter);
                     }
-                    EndDocPrinter(hPrinter);
+                    ClosePrinter(hPrinter);
                 }
-                ClosePrinter(hPrinter);
+                // If you did not succeed, GetLastError may give more information
+                // about why not.
+                if (bSuccess == false)
+                {
+                    dwError = Marshal.GetLastWin32Error();
+                }
             }
-            // If you did not succeed, GetLastError may give more information
-            // about why not.
-            if (bSuccess == false)
-            {
-                dwError = Marshal.GetLastWin32Error();
-            }
+            catch { }
             return bSuccess;
         }
 
@@ -140,9 +144,9 @@ namespace PosTicket.Repository.PrinterData
             // the string to ANSI text.
             pBytes = Marshal.StringToCoTaskMemAnsi(szString);
             // Send the converted ANSI string to the printer.
-            SendBytesToPrinter(szPrinterName, pBytes, dwCount);
+            bool success = SendBytesToPrinter(szPrinterName, pBytes, dwCount);
             Marshal.FreeCoTaskMem(pBytes);
-            return true;
+            return success;
         }
         public bool CetakReceipt(string printerName, Receipt data)
         {
@@ -181,8 +185,14 @@ namespace PosTicket.Repository.PrinterData
                 label.AppendLine("^FO10,480^ABB,5,10^FD" + printer.line5 + "^FS");
                 label.AppendLine("^FO30,615^ADN,12,8^FD" + printer.line6 + "^FS");
                 label.AppendLine("^XZ");
-                SendStringToPrinter(printerName, label.ToString());
-                await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "printed");
+                if(SendStringToPrinter(printerName, label.ToString()) == true)
+                {
+                    await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "printed");
+                }
+                else
+                {
+                    await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "draft");
+                }
             }
             return true;
         }
@@ -195,17 +205,16 @@ namespace PosTicket.Repository.PrinterData
             requestMessage.Content = new StringContent("{}",
                                     Encoding.UTF8,
                                     "application/json");
-            _ = await client.SendAsync(requestMessage);
+            var a = await client.SendAsync(requestMessage);
         }
         public async Task SendPrintingStatus(List<int> ticket_ids, string api_key, string server_url, string status)
         {
-            var client = new HttpClient();
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, server_url + "/saloka/ticket/print_proxy/" + status);
-            requestMessage.Headers.Add("X-Api-Key", api_key);
-            requestMessage.Content = new StringContent("{ticket_ids="+ ticket_ids + "}",
-                                    Encoding.UTF8,
-                                    "application/json");
-            _ = await client.SendAsync(requestMessage);
+            var request = new RestRequest(Method.POST);
+            RestClient url = new RestClient(server_url+"/saloka/ticket/print_proxy/"+status);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("X-Api-Key",api_key);
+            request.AddParameter("application/json", "{\"ticket_ids\":"+JsonConvert.SerializeObject(ticket_ids)+"}", ParameterType.RequestBody);
+            _ = await url.ExecuteTaskAsync(request);
         }
 
         public List<Config> ConfigList { get; set; }
