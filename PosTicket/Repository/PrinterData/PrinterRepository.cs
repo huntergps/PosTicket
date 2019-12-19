@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Printing;
-using System.Drawing;
-using System.Drawing.Printing;
 using PosTicket.Repository.Interface;
 using System.Text;
 using System.Threading.Tasks;
@@ -162,10 +160,15 @@ namespace PosTicket.Repository.PrinterData
         }
         public async Task<bool> CetakTicket(string printerName, List<Ticket> data)
         {
+            List<int> ticket_ids = new List<int>();
             ConfigList = readConfig.GetAllConfigs();
+            foreach(Ticket ticket in data)
+            {
+                ticket_ids.Add(ticket.id);
+            }
+            await SendPrintingStatus(ticket_ids, ConfigList[0].api_key, ConfigList[0].server_url, "printing");
             foreach (Ticket printer in data)
             {
-                await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "printing");
                 StringBuilder label = new StringBuilder();
                 label.AppendLine("^XA");
                 label.AppendLine("^POI");
@@ -194,15 +197,17 @@ namespace PosTicket.Repository.PrinterData
                                     "application/json");
             _ = await client.SendAsync(requestMessage);
         }
-
-        private List<Config> _configList;
-        public List<Config> ConfigList
+        public async Task SendPrintingStatus(List<int> ticket_ids, string api_key, string server_url, string status)
         {
-            get { return _configList; }
-            set
-            {
-                _configList = value;
-            }
+            var client = new HttpClient();
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, server_url + "/saloka/ticket/print_proxy/" + status);
+            requestMessage.Headers.Add("X-Api-Key", api_key);
+            requestMessage.Content = new StringContent("{ticket_ids="+ ticket_ids + "}",
+                                    Encoding.UTF8,
+                                    "application/json");
+            _ = await client.SendAsync(requestMessage);
         }
+
+        public List<Config> ConfigList { get; set; }
     }
 }
