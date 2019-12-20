@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Printing;
+using System.Drawing.Printing;
 using PosTicket.Repository.Interface;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using System.Net.Http;
 using PosTicket.Models;
 using Newtonsoft.Json;
 using RestSharp;
+using System.Drawing;
 
 namespace PosTicket.Repository.PrinterData
 {
@@ -69,7 +71,7 @@ namespace PosTicket.Repository.PrinterData
         // When the function is given a printer name and an unmanaged array
         // of bytes, the function sends those bytes to the print queue.
         // Returns true on success, false on failure.
-        public static bool SendBytesToPrinter(string szPrinterName, IntPtr pBytes, Int32 dwCount)
+        public static bool SendBytesToPrinter(string szPrinterName, IntPtr pBytes, Int32 dwCount, string dataType)
         {
             Int32 dwError = 0, dwWritten = 0;
             IntPtr hPrinter = new IntPtr(0);
@@ -79,7 +81,7 @@ namespace PosTicket.Repository.PrinterData
             {
                 di.pDocName = "Saloka Ticket Document";
                 //di.pDataType = "XPS_PASS";
-                di.pDataType = "RAW";
+                di.pDataType = dataType;
 
                 // Open the printer.
                 if (OpenPrinter(szPrinterName.Normalize(), out hPrinter, IntPtr.Zero))
@@ -109,7 +111,7 @@ namespace PosTicket.Repository.PrinterData
             return bSuccess;
         }
 
-        public static bool SendFileToPrinter(string szPrinterName, string szFileName)
+        public static bool SendFileToPrinter(string szPrinterName, string szFileName, string dataType)
         {
             // Open the file.
             FileStream fs = new FileStream(szFileName, FileMode.Open);
@@ -130,12 +132,12 @@ namespace PosTicket.Repository.PrinterData
             // Copy the managed byte array into the unmanaged array.
             Marshal.Copy(bytes, 0, pUnmanagedBytes, nLength);
             // Send the unmanaged bytes to the printer.
-            bSuccess = SendBytesToPrinter(szPrinterName, pUnmanagedBytes, nLength);
+            bSuccess = SendBytesToPrinter(szPrinterName, pUnmanagedBytes, nLength, dataType);
             // Free the unmanaged memory that you allocated earlier.
             Marshal.FreeCoTaskMem(pUnmanagedBytes);
             return bSuccess;
         }
-        public static bool SendStringToPrinter(string szPrinterName, string szString)
+        public static bool SendStringToPrinter(string szPrinterName, string szString, string dataType)
         {
             IntPtr pBytes;
             Int32 dwCount;
@@ -145,23 +147,36 @@ namespace PosTicket.Repository.PrinterData
             // the string to ANSI text.
             pBytes = Marshal.StringToCoTaskMemAnsi(szString);
             // Send the converted ANSI string to the printer.
-            bool success = SendBytesToPrinter(szPrinterName, pBytes, dwCount);
+            bool success = SendBytesToPrinter(szPrinterName, pBytes, dwCount, dataType);
             Marshal.FreeCoTaskMem(pBytes);
             return success;
         }
-        public bool CetakReceipt(string printerName, Receipt data)
+        public void PrintReceipt(string printerName,List<string> data)
         {
-            StringBuilder label = new StringBuilder();
-            
-            label.AppendLine(data.line1);
-            label.AppendLine(data.line2);
-            label.AppendLine(data.line3);
-            label.AppendLine(data.line4);
-            label.AppendLine(data.line5);
-            label.AppendLine(data.line6);
-            label.AppendLine("\x1b" + "\x69");
-            SendStringToPrinter(printerName, label.ToString());
-            return true;
+            PrintDocument pd = new PrintDocument();
+            pd.PrintPage += (sender, args) => CetakReceipt(data, args.Graphics);
+            pd.PrinterSettings.PrinterName = printerName;
+            if (pd.PrinterSettings.IsValid)
+            {
+                pd.Print();
+            }
+        }
+        public void CetakReceipt(List<string> data, Graphics graphics)
+        {
+            Font regular = new Font(FontFamily.GenericSansSerif, 10.0f, FontStyle.Regular);
+            Font bold = new Font(FontFamily.GenericSansSerif, 10.0f, FontStyle.Bold);
+            graphics.DrawString("SALOKA THEME PARK", bold, Brushes.Black, 20, 10);
+            graphics.DrawString("Jl.Fatmawati No.154, Gumuksari, Lopait, Kec.Tuntang", regular, Brushes.Black, 30, 30);
+            graphics.DrawString("Semarang, Jawa Tengah 50773, Indonesia", regular, Brushes.Black, 110, 50);
+            graphics.DrawLine(Pens.Black, 80, 70, 320, 70);
+            graphics.DrawString("SALOKA BRO", bold, Brushes.Black, 110, 80);
+            graphics.DrawLine(Pens.Black, 80, 100, 320, 100);
+            for (int i = 0; i < data.Count; i++)
+            {
+                graphics.DrawString(data[i], regular, Brushes.Black, 20, 150 + i * 20);
+            }
+            regular.Dispose();
+            bold.Dispose();
         }
         public bool CetakReceiptLine(string printerName, List<string> data)
         {
@@ -171,7 +186,7 @@ namespace PosTicket.Repository.PrinterData
             {
                 label.AppendLine(Isidata); ;
             }
-            SendStringToPrinter(printerName, label.ToString());
+            SendStringToPrinter(printerName, label.ToString(),"RAW");
             return true;
         }
         public async Task<bool> CetakTicket(string printerName, List<Ticket> data)
@@ -197,7 +212,7 @@ namespace PosTicket.Repository.PrinterData
                 label.AppendLine("^FO10,480^ABB,5,10^FD" + printer.line5 + "^FS");
                 label.AppendLine("^FO30,615^ADN,12,8^FD" + printer.line6 + "^FS");
                 label.AppendLine("^XZ");
-                if(SendStringToPrinter(printerName, label.ToString()) == true)
+                if(SendStringToPrinter(printerName, label.ToString(), "XPS_PASS") == true)
                 {
                     await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "printed");
                 }
