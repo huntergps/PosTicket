@@ -212,20 +212,28 @@ namespace PosTicket.ViewModel
                 });
             }
             PrinterRepository printerRepository = new PrinterRepository();
-            linedata = new List<string>();
-            linedata.Add("SALOKA THEME PARK");
-            linedata.Add("Jl. Fatmawati 154 Lopait");            
-            linedata.Add( "Tuntang Kab. Semarang Jawa Tengah");
-            linedata.Add( "              ");
+            linedata = new List<string>(); 
             linedata.Add( "DEPOSIT KASIR - " + ConfigList[0].current_ip);
-            linedata.Add( "---------------------------");
+            linedata.Add( "garis");
             linedata.Add( "TOTAL DEPOSIT : " + OpeningBalanceInt.ToString());
-            linedata.Add("---------------------------");
+            linedata.Add("garis");
+            linedata.Add("100,000 X " + HundredValue + " = " + (100000 * HundredValue));
+            linedata.Add(" 50,000 X " + FiftyValue + " = " + (50000 * FiftyValue));
+            linedata.Add(" 20,000 X " + TwentyValue + " = " + (20000 * TwentyValue));
+            linedata.Add(" 10,000 X " + TenValue + " = " + (10000 * TenValue));
+            linedata.Add("  5,000 X " + FiveValue + " = " + (5000 * FiveValue));
+            linedata.Add("  2,000 X " + TwoValue + " = " + (2000 * TwoValue));
+            linedata.Add("  1,000 X " + OneValue + " = " + (1000 * OneValue));
             linedata.Add(" ");
             linedata.Add(" ");
-            linedata.Add(" ");
-            linedata.Add( (char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
-            linedata.Add( "\x1b" + "\x69");
+            //linedata.Add( (char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
+
+            //printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
+            printerRepository.PrintReceipt(ConfigList[0].pos_printer, linedata);
+
+            linedata = new List<string>();
+            //linedata.Add("\x1b" + "\x69"); cut
+            linedata.Add((char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
             printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
             //sementara
             DepositData _depositData = new DepositData

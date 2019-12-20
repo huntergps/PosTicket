@@ -164,16 +164,24 @@ namespace PosTicket.Repository.PrinterData
         public void CetakReceipt(List<string> data, Graphics graphics)
         {
             Font regular = new Font(FontFamily.GenericSansSerif, 10.0f, FontStyle.Regular);
-            Font bold = new Font(FontFamily.GenericSansSerif, 10.0f, FontStyle.Bold);
-            graphics.DrawString("SALOKA THEME PARK", bold, Brushes.Black, 20, 10);
-            graphics.DrawString("Jl.Fatmawati No.154, Gumuksari, Lopait, Kec.Tuntang", regular, Brushes.Black, 30, 30);
-            graphics.DrawString("Semarang, Jawa Tengah 50773, Indonesia", regular, Brushes.Black, 110, 50);
-            graphics.DrawLine(Pens.Black, 80, 70, 320, 70);
-            graphics.DrawString("SALOKA BRO", bold, Brushes.Black, 110, 80);
-            graphics.DrawLine(Pens.Black, 80, 100, 320, 100);
+            Font bold = new Font(FontFamily.GenericSansSerif, 14.0f, FontStyle.Bold);
+            graphics.DrawString("SALOKA THEME PARK", bold, Brushes.Black, 30, 10);
+            graphics.DrawString("Jl.Fatmawati No.154, Gumuksari, Lopait", regular, Brushes.Black, 10, 40);
+            graphics.DrawString("Kec.Tuntang, Semarang", regular, Brushes.Black, 60, 60);
+            graphics.DrawString("Jawa Tengah 50773, Indonesia", regular, Brushes.Black, 45, 80);
+            graphics.DrawLine(Pens.Black, 10, 100, 320, 100);
+            //graphics.DrawString("SALOKA BRO", bold, Brushes.Black, 110, 80);
+            //graphics.DrawLine(Pens.Black, 10, 100, 320, 100);
             for (int i = 0; i < data.Count; i++)
             {
-                graphics.DrawString(data[i], regular, Brushes.Black, 20, 150 + i * 20);
+                if (data[i] == "garis")
+                {
+                    graphics.DrawLine(Pens.Black, 10, 120 + i * 20, 320, 120 + i * 20);
+                }
+                else
+                {
+                    graphics.DrawString(data[i], regular, Brushes.Black, 10, 120 + i * 20);
+                }
             }
             regular.Dispose();
             bold.Dispose();

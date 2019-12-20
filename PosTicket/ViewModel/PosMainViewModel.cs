@@ -856,8 +856,35 @@ namespace PosTicket.ViewModel
             GetPosSessionSummary();
             CloseSessionWindow.ShowDialog();
         }
+        public List<string> linedata;
         private void ClosePOSClick(object sender)
         {
+            PrinterRepository printerRepository = new PrinterRepository();
+            linedata = new List<string>();
+            linedata.Add("CLOSSING POS - " + ConfigList[0].current_ip);
+            linedata.Add("garis");
+            linedata.Add("Opening Cash Balance : " + opening_cash_balance);
+            linedata.Add("Sale Cash Balance : " + amount_sale_cash);
+            linedata.Add("Total Cash Balance : " + (opening_cash_balance + amount_sale_cash));
+            linedata.Add(" ");
+            linedata.Add("Sales Non Cash :" + amount_sale_non_cash);
+            linedata.Add(" ");
+            linedata.Add("Total Sales : " + amount_sale);
+            linedata.Add(" ");
+            linedata.Add("Total Tiket by Category : ");
+            foreach (PosSessionSaleCategory datacategory in SumCategorylist)
+            {
+                linedata.Add(datacategory.name + " : " + datacategory.sum );
+            }
+            linedata.Add(" ");
+            linedata.Add(" ");
+            printerRepository.PrintReceipt(ConfigList[0].pos_printer, linedata);
+
+            linedata = new List<string>();
+            //linedata.Add("\x1b" + "\x69"); cut
+            linedata.Add((char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
+            printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
+
             ClosePosSession(PosSessionCloseData);
         }
         private void CancelCloseSessionClick(object sender)
@@ -1056,7 +1083,8 @@ namespace PosTicket.ViewModel
             }
 
         }
-
+        public int idsales;
+        public int idpelanggan;
         private async void SendPaymentData(object sender)
         {
 
@@ -1091,32 +1119,62 @@ namespace PosTicket.ViewModel
 
                 linePayment.Add(new PaymentTransactionPaymentData { payment_method_id = paymentLine.id, amount = jmlbayar, reference = paymentLine.reff });
             }
+            
+            if (SelectedSalesPerson.id != null)
+            {
+                idsales = SelectedSalesPerson.id;
+            }
+            else
+            {
+                idsales = 1;
+            }
+
+            if (SelectedPelanggan.id != null)
+            {
+                idpelanggan = SelectedPelanggan.id;
+            }
+            else
+            {
+                idpelanggan = 1;
+            }
             paymentTransactionRequest.data = new PaymentTransactionRequestData {
                 pos_ip = IpAddressValue,
                 date_plan = DateTime.Now.ToString("yyyy-MM-dd"),
                 line_ids = lineTransaksi,
                 payment_ids = linePayment,
-
-                salesperson_id = (SelectedSalesPerson.id | 1),
-                partner_id = (SelectedPelanggan.id| 1)
+                salesperson_id = idsales,
+                partner_id = idpelanggan
             };
             PaymentTransactionResponse paymentResponse = await readPayment.PostTransactionPayment(paymentTransactionRequest);
             if (paymentResponse.result != null || paymentResponse.error == null)
             {
                 PrinterRepository printerRepository = new PrinterRepository();
-                printerRepository.CetakReceipt(ConfigList[0].pos_printer, new Receipt
+                //print receipt 
+                linedata = new List<string>();
+                linedata.Add("Produk          Qty     Price      Total");
+                linedata.Add("garis");
+                foreach ( Cart Datajual in CartList)
                 {
-                    line1 = "========================================",
-                    line2 = "            Saloka Theme Park             ",
-                    line3 = "========================================",
-                    line4 = "           Struk Pembelian Ticket         ",
-                    line5 = "========================================",
-                    line6 = (char)27+"@"+ (char)27+"p"+(char)0+".}"
-                    
-                }) ;
+                    linedata.Add(Datajual.name + "   " + Datajual.qty + "   " + Datajual.price + "    " + Datajual.total);
+                }
+                linedata.Add("garis");
+                linedata.Add(" ");
+                linedata.Add(" ");
+                //linedata.Add( (char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
+
+                //printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
+                printerRepository.PrintReceipt(ConfigList[0].pos_printer, linedata);
+
+                linedata = new List<string>();
+                //linedata.Add("\x1b" + "\x69"); cut
+                linedata.Add((char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
+                printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
+
+
                 await printerRepository.CetakTicket(ConfigList[0].ticket_printer, paymentResponse.result.tickets);
                 //close payment window
                 CartList.Clear();
+                
                 paymentWindow.Hide();
                 RaisePropertyChanged("GrandTotal");
                 RaisePropertyChanged("TotalTiket");
