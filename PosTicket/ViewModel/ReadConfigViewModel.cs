@@ -25,10 +25,18 @@ namespace PosTicket.ViewModel
         public ReadConfigViewModel()
         {
             SaveConfigCommand = new RelayCommand(SaveConfigClick);
+            CloseWindowCommand = new RelayCommand(CloseWindowClick);
             readConfig = new ReadConfig();
             readPrinter = new ReadPrinter();
             GetLocalIpAddresses();
         }
+
+        private void CloseWindowClick(object sender)
+        {
+            ShowLoginWindow();
+            CloseWindow(sender);
+        }
+
         public void GetLocalIpAddresses()
         {
             IpAddressList = new List<string>();
