@@ -170,8 +170,6 @@ namespace PosTicket.Repository.PrinterData
             graphics.DrawString("Kec.Tuntang, Semarang", regular, Brushes.Black, 60, 60);
             graphics.DrawString("Jawa Tengah 50773, Indonesia", regular, Brushes.Black, 45, 80);
             graphics.DrawLine(Pens.Black, 10, 100, 320, 100);
-            //graphics.DrawString("SALOKA BRO", bold, Brushes.Black, 110, 80);
-            //graphics.DrawLine(Pens.Black, 10, 100, 320, 100);
             for (int i = 0; i < data.Count; i++)
             {
                 if (data[i] == "garis")

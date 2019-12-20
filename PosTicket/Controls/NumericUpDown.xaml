@@ -13,7 +13,7 @@
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="txtNum" x:FieldModifier="private" Text="{Binding Path=NumValue}" Grid.Column="0" TextChanged="TxtNum_TextChanged" FontSize="35" TextAlignment="Center"/>
+        <TextBox x:Name="txtNum" x:FieldModifier="private" Text="{Binding Path=NumValue}" Grid.Column="0" TextChanged="TxtNum_TextChanged" FontSize="35" TextAlignment="Center" IsReadOnly="True"/>
         <Grid Grid.Column="1" >
             <Button x:Name="cmdDown" x:FieldModifier="private" Click="CmdDown_Click" Margin="0 0 2 0" Height="Auto">
                 <materialDesign:PackIcon Kind="MinusBoxOutline" Foreground="White"/>
