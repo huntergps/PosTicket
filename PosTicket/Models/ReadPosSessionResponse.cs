@@ -13,7 +13,7 @@ namespace PosTicket.Models
             Repository = new PosSessionRepository();
             return await Repository.GetPosSessionDataAsync(ip_address);
         }
-        public async Task<PosSessionClose> ClosePosSessionAsync(PosSessionCloseRequest posSessionCloseRequest)
+        public async Task<ClosingFinal> ClosePosSessionAsync(PosSessionCloseRequest posSessionCloseRequest)
         {
             Repository = new PosSessionRepository();
             return await Repository.ClosePoseSessionAsync(posSessionCloseRequest);

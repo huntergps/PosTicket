@@ -8,7 +8,7 @@ using System.Windows.Input;
 using PosTicket.Repository.Interface;
 using PosTicket.Views;
 using PosTicket.Models;
-
+using PosTicket.Repository.PrinterData;
 namespace PosTicket.ViewModel
 {
     public class SetDepositViewModel : NavigableControlViewModel
@@ -112,6 +112,7 @@ namespace PosTicket.ViewModel
             }
             set { }
         }
+        public List<string> linedata;
         public int OpeningBalanceInt
         {
             get
@@ -210,6 +211,23 @@ namespace PosTicket.ViewModel
                     qty = OneValue
                 });
             }
+            PrinterRepository printerRepository = new PrinterRepository();
+            linedata = new List<string>();
+            linedata.Add("SALOKA THEME PARK");
+            linedata.Add("Jl. Fatmawati 154 Lopait");            
+            linedata.Add( "Tuntang Kab. Semarang Jawa Tengah");
+            linedata.Add( "              ");
+            linedata.Add( "DEPOSIT KASIR - " + ConfigList[0].current_ip);
+            linedata.Add( "---------------------------");
+            linedata.Add( "TOTAL DEPOSIT : " + OpeningBalanceInt.ToString());
+            linedata.Add("---------------------------");
+            linedata.Add(" ");
+            linedata.Add(" ");
+            linedata.Add(" ");
+            linedata.Add( (char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
+            linedata.Add( "\x1b" + "\x69");
+            printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
+            //sementara
             DepositData _depositData = new DepositData
             {
                 pos_ip = IpAddressValue,

@@ -78,7 +78,8 @@ namespace PosTicket.Repository.PrinterData
             try
             {
                 di.pDocName = "Saloka Ticket Document";
-                di.pDataType = "XPS_PASS";
+                //di.pDataType = "XPS_PASS";
+                di.pDataType = "RAW";
 
                 // Open the printer.
                 if (OpenPrinter(szPrinterName.Normalize(), out hPrinter, IntPtr.Zero))
@@ -159,6 +160,17 @@ namespace PosTicket.Repository.PrinterData
             label.AppendLine(data.line5);
             label.AppendLine(data.line6);
             label.AppendLine("\x1b" + "\x69");
+            SendStringToPrinter(printerName, label.ToString());
+            return true;
+        }
+        public bool CetakReceiptLine(string printerName, List<string> data)
+        {
+            StringBuilder label = new StringBuilder();
+
+            foreach (string Isidata in data)
+            {
+                label.AppendLine(Isidata); ;
+            }
             SendStringToPrinter(printerName, label.ToString());
             return true;
         }

@@ -101,13 +101,13 @@ namespace PosTicket.ViewModel
             PrintTicketCommand = new RelayCommand(o => PrintTiketClick("ReprintTiketCommandButton"));
             CancelReprintTicketCommand = new RelayCommand(o => CancelReprintTiketClick("CancelReprintTiketCommandButton"));
             CancelPermisionCommand = new RelayCommand(o => CancelPermisionClick("CancelPermisionCommandButton"));
-            
+
             ReprintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("ReprintReceiptCommandButton"));
             FindReceiptCommand = new RelayCommand(o => FindReceiptClick());
             PrintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("PrintReceiptCommandButton"));
             CancelReprintReceiptCommand = new RelayCommand(o => CancelReprintReceiptClick("CancelReprintReceiptCommandButton"));
-            
-            
+
+
             DeleteCartCommand = new RelayCommand(o => DeleteCartItem("DeleteCartCommandButton"));
             PaymentCommand = new RelayCommand(SetPayment);
             ClosePaymentCommand = new RelayCommand(ClosePayment);
@@ -144,10 +144,11 @@ namespace PosTicket.ViewModel
             readSession = new ReadSession();
             SessionList = readSession.GetSession();
             Username = SessionList.user_name;
-            Userlogin= SessionList.user_login;
+            Userlogin = SessionList.user_login;
             PaymentMethodList = new List<PaymentData>();
             TicketList = new ObservableCollection<CartTicket>();
             ReceiptList = new ObservableCollection<ListReceiptResponse>();
+            SumCategorylist = new List<PosSessionSaleCategory>();
             GetPaymentMethod();
             SelectedSalesPerson = new SalesPersonData();
             SelectedPelanggan = new CustomerData();
@@ -217,7 +218,7 @@ namespace PosTicket.ViewModel
             {
                 username = UsernameValue,
                 password = Password,
-                ticket_ids= ticket_ids
+                ticket_ids = ticket_ids
 
             };
             readPrintTicketResponse = new ReadPrintTicketResponse();
@@ -239,7 +240,7 @@ namespace PosTicket.ViewModel
                 UsernameValue = "";
                 Password = "";
             }
-            
+
         }
         private void GetLockResponseClick(object sender)
         {
@@ -274,21 +275,39 @@ namespace PosTicket.ViewModel
         }
         public decimal opening_cash_balance { get; set; }
         public decimal amount_sale_cash { get; set; }
+        public decimal total_cash_balance { get; set; }
         public decimal amount_sale_non_cash { get; set; }
         public decimal amount_sale { get; set; }
         public int count_ticket { get; set; }
+
+        private List<PosSessionSaleCategory> _sumCategorylist;
+        public List<PosSessionSaleCategory> SumCategorylist
+        {
+            get { return _sumCategorylist; }
+            set
+            {
+                _sumCategorylist = value;
+                RaisePropertyChanged("SumCategorylist");
+            }
+        }
         private async void GetPosSessionSummary()
         {
             PosSessionClose posSessionCloseResponse = new PosSessionClose();
             ReadPosSessionResponse closePosSession = new ReadPosSessionResponse();
             posSessionCloseResponse = await closePosSession.GetPosSessionSummary(IpAddressValue);
-            if (posSessionCloseResponse.result.error == null)
+            if (posSessionCloseResponse.result.error == null | posSessionCloseResponse.error == null)
             {
                 opening_cash_balance = decimal.Parse(posSessionCloseResponse.result.opening_cash_balance.ToString());
-                amount_sale_cash = decimal.Parse(posSessionCloseResponse.result.amount_sale_cash.ToString()); 
+                amount_sale_cash = decimal.Parse(posSessionCloseResponse.result.amount_sale_cash.ToString());
+                total_cash_balance = decimal.Parse(posSessionCloseResponse.result.amount_sale_cash.ToString()) + decimal.Parse(posSessionCloseResponse.result.opening_cash_balance.ToString());
                 amount_sale = decimal.Parse(posSessionCloseResponse.result.amount_sale.ToString());
                 amount_sale_non_cash = decimal.Parse(posSessionCloseResponse.result.amount_sale_non_cash.ToString());
                 count_ticket = int.Parse(posSessionCloseResponse.result.count_ticket.ToString());
+                foreach(PosSessionSaleCategory listCategory in posSessionCloseResponse.result.amount_sale_by_category)
+                {
+                    if (listCategory.sum != 0)
+                        SumCategorylist.Add(listCategory);
+                }
             }
             else
             {
@@ -839,7 +858,6 @@ namespace PosTicket.ViewModel
         }
         private void ClosePOSClick(object sender)
         {
-            
             ClosePosSession(PosSessionCloseData);
         }
         private void CancelCloseSessionClick(object sender)
@@ -849,9 +867,9 @@ namespace PosTicket.ViewModel
 
         private async void ClosePosSession(PosSessionCloseRequest _posSessionCloseRequest)
         {
-            PosSessionClose posSessionCloseResponse = new PosSessionClose();
+            ClosingFinal posSessionCloseResponse = new ClosingFinal();
             ReadPosSessionResponse closePosSession = new ReadPosSessionResponse();
-            posSessionCloseResponse = await closePosSession.ClosePosSessionAsync(_posSessionCloseRequest);
+            posSessionCloseResponse      = await closePosSession.ClosePosSessionAsync(_posSessionCloseRequest);
             if (posSessionCloseResponse.result.error == null)
             {
                 System.Windows.Application.Current.Shutdown(); ;
@@ -1078,8 +1096,9 @@ namespace PosTicket.ViewModel
                 date_plan = DateTime.Now.ToString("yyyy-MM-dd"),
                 line_ids = lineTransaksi,
                 payment_ids = linePayment,
-                salesperson_id = SelectedSalesPerson.id,
-                partner_id = SelectedPelanggan.id
+
+                salesperson_id = (SelectedSalesPerson.id | 1),
+                partner_id = (SelectedPelanggan.id| 1)
             };
             PaymentTransactionResponse paymentResponse = await readPayment.PostTransactionPayment(paymentTransactionRequest);
             if (paymentResponse.result != null || paymentResponse.error == null)

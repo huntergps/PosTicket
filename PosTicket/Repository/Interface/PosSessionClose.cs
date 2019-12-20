@@ -8,6 +8,7 @@ namespace PosTicket.Repository.Interface
     {
         public PosSessionCloseData result { get; set; }
         public string version { get; set; }
+        public ErrorMessage error { get; set; }
     }
     public class PosSessionSaleCategory
     {
@@ -25,6 +26,6 @@ namespace PosTicket.Repository.Interface
         public decimal amount_sale_non_cash { get; set; }
         public decimal amount_sale { get; set; }
         public int count_ticket { get; set; }
-        public PosSessionSaleCategory amount_sale_by_category { get; set; }
+        public List<PosSessionSaleCategory> amount_sale_by_category { get; set; }
     }
 }

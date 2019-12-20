@@ -21,14 +21,14 @@ namespace PosTicket.Repository.WebService
             PosSession posResponse = JsonConvert.DeserializeObject<PosSession>(response.Content);
             return posResponse;
         }
-        public async Task<PosSessionClose> ClosePoseSessionAsync(PosSessionCloseRequest posSessionCloseRequest)
+        public async Task<ClosingFinal> ClosePoseSessionAsync(PosSessionCloseRequest posSessionCloseRequest)
         {
             RestClient client = WebServiceContext.GetUrl("/api/v2/pos/session/close");
             RestRequest request = WebServiceContext.GetRequestBody("post");
 
             request.AddParameter("application/json", JsonConvert.SerializeObject(posSessionCloseRequest), ParameterType.RequestBody);
             IRestResponse response = await client.ExecuteTaskAsync(request);
-            PosSessionClose posSessionCloseResponse = JsonConvert.DeserializeObject<PosSessionClose>(response.Content);
+            ClosingFinal posSessionCloseResponse = JsonConvert.DeserializeObject<ClosingFinal>(response.Content);
             return posSessionCloseResponse;
         }
         public async Task<PosSessionClose> GetPosSessionSummary(string ip_address)

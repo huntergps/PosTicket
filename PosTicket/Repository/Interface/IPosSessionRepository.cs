@@ -4,7 +4,7 @@ namespace PosTicket.Repository.Interface
     public interface IPosSessionRepository
     {
         Task<PosSession> GetPosSessionDataAsync(string ip_address);
-        Task<PosSessionClose> ClosePoseSessionAsync(PosSessionCloseRequest posSessionCloseRequest);
+        Task<ClosingFinal> ClosePoseSessionAsync(PosSessionCloseRequest posSessionCloseRequest);
         Task<PosSessionClose> GetPosSessionSummary(string ip_address);
     }
 }
