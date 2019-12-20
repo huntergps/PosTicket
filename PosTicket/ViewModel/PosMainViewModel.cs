@@ -1122,31 +1122,13 @@ namespace PosTicket.ViewModel
 
                 linePayment.Add(new PaymentTransactionPaymentData { payment_method_id = paymentLine.id, amount = jmlbayar, reference = paymentLine.reff });
             }
-            
-            if (SelectedSalesPerson.id != null)
-            {
-                idsales = SelectedSalesPerson.id;
-            }
-            else
-            {
-                idsales = 1;
-            }
-
-            if (SelectedPelanggan.id != null)
-            {
-                idpelanggan = SelectedPelanggan.id;
-            }
-            else
-            {
-                idpelanggan = 1;
-            }
             paymentTransactionRequest.data = new PaymentTransactionRequestData {
                 pos_ip = IpAddressValue,
                 date_plan = DateTime.Now.ToString("yyyy-MM-dd"),
                 line_ids = lineTransaksi,
                 payment_ids = linePayment,
-                salesperson_id = idsales,
-                partner_id = idpelanggan
+                salesperson_id = SelectedSalesPerson != null ? SelectedSalesPerson.id:0 ,
+                partner_id = SelectedPelanggan != null ? SelectedPelanggan.id:0
             };
             PaymentTransactionResponse paymentResponse = await readPayment.PostTransactionPayment(paymentTransactionRequest);
             if (paymentResponse.result != null || paymentResponse.error == null)
