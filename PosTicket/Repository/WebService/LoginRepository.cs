@@ -20,6 +20,11 @@ namespace PosTicket.Repository.WebService
             try
             {
                 IRestResponse response = await client.ExecuteTaskAsync(request);
+                if(response.ErrorException != null)
+                {
+                    LoginResponse loginResponse = new LoginResponse { error = new ErrorMessage { code = 400, message = response.ErrorMessage} };
+                    return loginResponse;
+                }
                 if (response.StatusCode == System.Net.HttpStatusCode.BadGateway)
                 {
                     LoginResponse loginResponse = new LoginResponse { error=new ErrorMessage {code =502,message= response.StatusDescription } };
