@@ -292,9 +292,8 @@ namespace PosTicket.ViewModel
         }
         private async void GetPosSessionSummary()
         {
-            PosSessionClose posSessionCloseResponse = new PosSessionClose();
             ReadPosSessionResponse closePosSession = new ReadPosSessionResponse();
-            posSessionCloseResponse = await closePosSession.GetPosSessionSummary(IpAddressValue);
+            PosSessionClose posSessionCloseResponse = await closePosSession.GetPosSessionSummary(IpAddressValue);
             if (posSessionCloseResponse.result.error == null | posSessionCloseResponse.error == null)
             {
                 opening_cash_balance = decimal.Parse(posSessionCloseResponse.result.opening_cash_balance.ToString());
