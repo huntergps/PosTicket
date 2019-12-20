@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using PosTicket.Repository.PrinterData;
 using PosTicket.Repository.UserSession;
+using System.Threading;
 
 namespace PosTicket.ViewModel
 {
@@ -851,8 +852,11 @@ namespace PosTicket.ViewModel
         }
         
         private void CloseSessionClick(object sender)
-        {            
-            GetPosSessionSummary();
+        {
+            Thread thread = new Thread(() => GetPosSessionSummary());
+            thread.IsBackground = true;
+            thread.Priority = ThreadPriority.Highest;
+            thread.Start();
             CloseSessionWindow.ShowDialog();
         }
         public List<string> linedata;
