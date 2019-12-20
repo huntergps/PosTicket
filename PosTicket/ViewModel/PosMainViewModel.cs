@@ -1086,8 +1086,6 @@ namespace PosTicket.ViewModel
             }
 
         }
-        public int idsales;
-        public int idpelanggan;
         private async void SendPaymentData(object sender)
         {
 
