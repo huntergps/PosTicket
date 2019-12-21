@@ -1132,36 +1132,43 @@ namespace PosTicket.ViewModel
             PaymentTransactionResponse paymentResponse = await readPayment.PostTransactionPayment(paymentTransactionRequest);
             if (paymentResponse.result != null || paymentResponse.error == null)
             {
-                PrinterRepository printerRepository = new PrinterRepository();
-                //print receipt 
-                linedata = new List<string>();
-                linedata.Add("Produk          Qty     Price      Total");
-                linedata.Add("garis");
-                foreach ( Cart Datajual in CartList)
+                if(paymentResponse.result.error != null)
                 {
-                    linedata.Add(Datajual.name + "   " + Datajual.qty + "   " + Datajual.price + "    " + Datajual.total);
+                    MaterialMessageBox.ShowDialog(paymentResponse.result.error.message, paymentResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
                 }
-                linedata.Add("garis");
-                linedata.Add(" ");
-                linedata.Add(" ");
-                //linedata.Add( (char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
+                else
+                {
+                    PrinterRepository printerRepository = new PrinterRepository();
+                    //print receipt 
+                    linedata = new List<string>();
+                    linedata.Add("Produk          Qty     Price      Total");
+                    linedata.Add("garis");
+                    foreach (Cart Datajual in CartList)
+                    {
+                        linedata.Add(Datajual.name + "   " + Datajual.qty + "   " + Datajual.price + "    " + Datajual.total);
+                    }
+                    linedata.Add("garis");
+                    linedata.Add(" ");
+                    linedata.Add(" ");
+                    //linedata.Add( (char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
 
-                //printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
-                printerRepository.PrintReceipt(ConfigList[0].pos_printer, linedata);
+                    //printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
+                    printerRepository.PrintReceipt(ConfigList[0].pos_printer, linedata);
 
-                linedata = new List<string>();
-                //linedata.Add("\x1b" + "\x69"); cut
-                linedata.Add((char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
-                printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
+                    linedata = new List<string>();
+                    //linedata.Add("\x1b" + "\x69"); cut
+                    linedata.Add((char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
+                    printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
 
 
-                await printerRepository.CetakTicket(ConfigList[0].ticket_printer, paymentResponse.result.tickets);
-                //close payment window
-                CartList.Clear();
-                
-                paymentWindow.Hide();
-                RaisePropertyChanged("GrandTotal");
-                RaisePropertyChanged("TotalTiket");
+                    await printerRepository.CetakTicket(ConfigList[0].ticket_printer, paymentResponse.result.tickets);
+                    //close payment window
+                    CartList.Clear();
+
+                    paymentWindow.Hide();
+                    RaisePropertyChanged("GrandTotal");
+                    RaisePropertyChanged("TotalTiket");
+                }
             }
             else
             {
