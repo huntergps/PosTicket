@@ -8,6 +8,7 @@ namespace PosTicket.Repository.Interface
     {
         public PosSessionData result { get; set; }
         public string version { get; set; }
+        public PosSessionErrorMessage error { get; set; }
     }
     public class PosSessionErrorMessage
     {

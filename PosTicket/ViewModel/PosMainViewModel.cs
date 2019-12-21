@@ -903,7 +903,7 @@ namespace PosTicket.ViewModel
             posSessionCloseResponse      = await closePosSession.ClosePosSessionAsync(_posSessionCloseRequest);
             if (posSessionCloseResponse.result.error == null)
             {
-                System.Windows.Application.Current.Shutdown(); ;
+                System.Windows.Application.Current.Shutdown();
             }
             else
             {

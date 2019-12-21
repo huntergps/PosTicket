@@ -253,17 +253,17 @@ namespace PosTicket.ViewModel
         }
         private async void SendDepositData(Deposit _depositValue)
         {
-            PosSession depositResponse = new PosSession();
             readDeposit = new ReadDepositResponse();
-            depositResponse = await readDeposit.GetDepositAsync(_depositValue);
-            if (depositResponse.result.error == null)
+            PosSession depositResponse = await readDeposit.GetDepositAsync(_depositValue);
+            var error = depositResponse.error != null? depositResponse.error : depositResponse.result.error;
+            if (error == null)
             {
                 ShowMainWindow();
                 CloseAction();
             }
             else
             {
-                MaterialMessageBox.ShowDialog(depositResponse.result.error.message, depositResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+                MaterialMessageBox.ShowDialog(error.message, error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
             }
         }
         public void ViewLoaded()

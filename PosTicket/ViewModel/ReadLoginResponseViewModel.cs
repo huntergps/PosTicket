@@ -35,6 +35,7 @@ namespace PosTicket.ViewModel
             {
                 winObj.Close();
             }
+            Application.Current.Shutdown();
         }
         private List<Config> _configList;
 
