@@ -1,18 +1,11 @@
 ﻿using System;
 using Dna;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using System.Data.SQLite;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using PosTicket.DataModels;
 using PosTicket.Models;
-using PosTicket.ViewModel;
 using PosTicket.Repository.SQLite;
 using static Dna.FrameworkDI;
-using static PosTicket.DI;
 
 namespace PosTicket
 {

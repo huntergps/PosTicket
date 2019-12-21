@@ -297,6 +297,7 @@ namespace PosTicket.ViewModel
             PosSessionClose posSessionCloseResponse = await closePosSession.GetPosSessionSummary(IpAddressValue);
             if (posSessionCloseResponse.result.error == null | posSessionCloseResponse.error == null)
             {
+                SumCategorylist.Clear();
                 opening_cash_balance = decimal.Parse(posSessionCloseResponse.result.opening_cash_balance.ToString());
                 amount_sale_cash = decimal.Parse(posSessionCloseResponse.result.amount_sale_cash.ToString());
                 total_cash_balance = decimal.Parse(posSessionCloseResponse.result.amount_sale_cash.ToString()) + decimal.Parse(posSessionCloseResponse.result.opening_cash_balance.ToString());
