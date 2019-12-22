@@ -7,13 +7,11 @@ using System.Windows;
 using System.Windows.Input;
 using PosTicket.Repository.Interface;
 using PosTicket.Views;
-using System.Linq;
 using PosTicket.Models;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using PosTicket.Repository.PrinterData;
-using PosTicket.Repository.UserSession;
 using System.Threading;
+using System.Linq;
 
 namespace PosTicket.ViewModel
 {
@@ -80,8 +78,8 @@ namespace PosTicket.ViewModel
 
             CartList = new ObservableCollection<Cart>();
             BayarList = new ObservableCollection<PayCart>();
-            CloseSessionCommand = new RelayCommand(o => CloseSessionClick("CloseSessionCommandButton"));
-            ClosePOSCommand = new RelayCommand(o => ClosePOSClick("CloseSessionCommandButton"));
+            CloseSessionCommand = new RelayCommand(CloseSessionClick);
+            ClosePOSCommand = new RelayCommand(ClosePOSClick);
             CancelCloseSessionCommand = new RelayCommand(o => CancelCloseSessionClick("CloseSessionCommandButton"));
             LockPosCommand = new RelayCommand(o => LockPosClick("LockPosCommandButton"));
             //sales
@@ -274,12 +272,66 @@ namespace PosTicket.ViewModel
                 PaymentMethodList.Add(paymentData);
             }
         }
-        public decimal opening_cash_balance { get; set; }
-        public decimal amount_sale_cash { get; set; }
-        public decimal total_cash_balance { get; set; }
-        public decimal amount_sale_non_cash { get; set; }
-        public decimal amount_sale { get; set; }
-        public int count_ticket { get; set; }
+        private decimal _opening_cash_balance;
+        public decimal opening_cash_balance 
+        {
+            get { return _opening_cash_balance; }
+            set
+            {
+                _opening_cash_balance = value;
+                RaisePropertyChanged("opening_cash_balance");
+            }
+        }
+        private decimal _amount_sale_cash;
+        public decimal amount_sale_cash 
+        {
+            get { return _amount_sale_cash; }
+            set
+            {
+                _amount_sale_cash = value;
+                RaisePropertyChanged("amount_sale_cash");
+            }
+        }
+        private decimal _total_cash_balance;
+        public decimal total_cash_balance 
+        {
+            get { return _total_cash_balance; }
+            set
+            {
+                _total_cash_balance = value;
+                RaisePropertyChanged("total_cash_balance");
+            }
+        }
+        private decimal _amount_sale_non_cash;
+        public decimal amount_sale_non_cash 
+        {
+            get { return _amount_sale_non_cash; }
+            set
+            {
+                _amount_sale_non_cash = value;
+                RaisePropertyChanged("amount_sale_non_cash");
+            }
+        }
+        private decimal _amount_sale;
+        public decimal amount_sale 
+        {
+            get { return _amount_sale; }
+            set
+            {
+                _amount_sale = value;
+                RaisePropertyChanged("amount_sale");
+            }
+        }
+        private int _count_ticket;
+        public int count_ticket 
+        {
+            get { return _count_ticket; }
+            set
+            {
+                _amount_sale = value;
+                RaisePropertyChanged("count_ticket");
+            }
+        }
 
         private List<PosSessionSaleCategory> _sumCategorylist;
         public List<PosSessionSaleCategory> SumCategorylist
@@ -304,11 +356,14 @@ namespace PosTicket.ViewModel
                 amount_sale = decimal.Parse(posSessionCloseResponse.result.amount_sale.ToString());
                 amount_sale_non_cash = decimal.Parse(posSessionCloseResponse.result.amount_sale_non_cash.ToString());
                 count_ticket = int.Parse(posSessionCloseResponse.result.count_ticket.ToString());
-                foreach(PosSessionSaleCategory listCategory in posSessionCloseResponse.result.amount_sale_by_category)
+                foreach (PosSessionSaleCategory listCategory in posSessionCloseResponse.result.amount_sale_by_category)
                 {
-                    if (listCategory.sum != 0)
-                        SumCategorylist.Add(listCategory);
+                    SumCategorylist.Add(listCategory);
+                    RaisePropertyChanged("SumCategorylist");
                 }
+                SumCategorylist = SumCategorylist.Where(SumCategorylist => SumCategorylist.sum != 0).ToList();
+
+
             }
             else
             {

@@ -136,7 +136,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="Set Deposit and Open Session" Margin="0 10 0 0" Command="{Binding OpenSessionCommand}"/>
+                <Button Grid.Column="0" Content="Set Deposit and Open Session" Margin="0 10 0 0" Command="{Binding OpenSessionCommand}" CommandParameter="{Binding ElementName=viewSetDeposit}"/>
             </Grid>
             <Grid>
                 <Grid.ColumnDefinitions>

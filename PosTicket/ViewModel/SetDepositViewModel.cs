@@ -21,7 +21,7 @@ namespace PosTicket.ViewModel
         public ICommand CloseWindowCommand { get; set; }
         public SetDepositViewModel()
         {
-            OpenSessionCommand = new RelayCommand(o => OpenSessionClick("OpenSessionCommandButton"));
+            OpenSessionCommand = new RelayCommand(OpenSessionClick);
             CloseWindowCommand = new RelayCommand(CloseWindowClick);
             readConfig = new ReadConfig();
             readDeposit = new ReadDepositResponse();
@@ -129,7 +129,7 @@ namespace PosTicket.ViewModel
         {
             get 
             {
-                return ((HundredValue * 100000) + (FiftyValue * 50000) + (TwentyValue * 20000) + (TenValue * 10000) + (FiveValue * 5000)+ (TwoValue * 2000)+ (OneValue * 1000)).ToString("N0");
+                return ((HundredValue * 100000) + (FiftyValue * 50000) + (TwentyValue * 20000) + (TenValue * 10000) + (FiveValue * 5000) + (TwoValue * 2000) + (OneValue * 1000)).ToString("N0");
             }
             set { }
         }
@@ -264,15 +264,14 @@ namespace PosTicket.ViewModel
                 cash_detail = depositCashDetail
             };
             Deposit _depositRequest = new Deposit { data = _depositData };
-            SendDepositData(_depositRequest);
+            SendDepositData(_depositRequest, sender);
         }
         private void ShowMainWindow()
         {
             ViewPosMain mainWindow = new ViewPosMain();
             mainWindow.Show();
-            CloseAction();
         }
-        private async void SendDepositData(Deposit _depositValue)
+        private async void SendDepositData(Deposit _depositValue, object sender)
         {
             readDeposit = new ReadDepositResponse();
             PosSession depositResponse = await readDeposit.GetDepositAsync(_depositValue);
@@ -280,7 +279,8 @@ namespace PosTicket.ViewModel
             if (error == null)
             {
                 ShowMainWindow();
-                CloseAction();
+                CloseWindow(sender);
+
             }
             else
             {
