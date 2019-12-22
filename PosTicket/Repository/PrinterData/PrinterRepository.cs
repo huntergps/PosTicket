@@ -12,6 +12,10 @@ using PosTicket.Models;
 using Newtonsoft.Json;
 using RestSharp;
 using System.Drawing;
+using MaterialDesignMessageBox;
+using System.Windows;
+using MaterialDesignThemes.Wpf;
+using MaterialDesignColors;
 
 namespace PosTicket.Repository.PrinterData
 {
@@ -160,11 +164,15 @@ namespace PosTicket.Repository.PrinterData
             {
                 pd.Print();
             }
+            else
+            {
+                MaterialMessageBox.ShowDialog("Please Check Your Printer", "Printer Error!", MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+            }
         }
         public void CetakReceipt(List<string> data, Graphics graphics)
         {
-            Font regular = new Font(FontFamily.GenericSansSerif, 10.0f, FontStyle.Regular);
-            Font bold = new Font(FontFamily.GenericSansSerif, 14.0f, FontStyle.Bold);
+            Font regular = new Font(FontFamily.GenericSansSerif, 10.0f, System.Drawing.FontStyle.Regular);
+            Font bold = new Font(FontFamily.GenericSansSerif, 14.0f, System.Drawing.FontStyle.Bold);
             graphics.DrawString("SALOKA THEME PARK", bold, Brushes.Black, 30, 10);
             graphics.DrawString("Jl.Fatmawati No.154, Gumuksari, Lopait", regular, Brushes.Black, 10, 40);
             graphics.DrawString("Kec.Tuntang, Semarang", regular, Brushes.Black, 60, 60);

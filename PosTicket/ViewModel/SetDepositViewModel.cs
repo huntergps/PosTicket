@@ -16,12 +16,33 @@ namespace PosTicket.ViewModel
         private ReadConfig readConfig { get; set; }
         private ReadDepositResponse readDeposit { get; set; }
         public ICommand OpenSessionCommand { get; set; }
+        
         public Action CloseAction { get; set; }
+        public ICommand CloseWindowCommand { get; set; }
         public SetDepositViewModel()
         {
             OpenSessionCommand = new RelayCommand(o => OpenSessionClick("OpenSessionCommandButton"));
+            CloseWindowCommand = new RelayCommand(CloseWindowClick);
             readConfig = new ReadConfig();
             readDeposit = new ReadDepositResponse();
+        }
+        private void ShowLoginWindow()
+        {
+            Login loginWindow = new Login();
+            loginWindow.Show();
+        }
+        private void CloseWindowClick(object sender)
+        {
+            ShowLoginWindow();
+            CloseWindow(sender);
+        }
+        private void CloseWindow(object sender)
+        {
+            Window winObj = (Window)sender;
+            if (winObj != null)
+            {
+                winObj.Close();
+            }
         }
         private List<Deposit> _depositList;
         public List<Deposit> DepositList

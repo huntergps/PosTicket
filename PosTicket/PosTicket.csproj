@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dna.Framework" Version="1.0.7.15" />
     <PackageReference Include="Dragablz" Version="0.0.3.203" />
     <PackageReference Include="MaterialDesignColors" Version="1.2.0" />
