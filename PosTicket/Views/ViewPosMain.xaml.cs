@@ -34,5 +34,6 @@ namespace PosTicket.Views
                 posMainViewModel.CloseAction = new Action(this.Close);
             posMainViewModel.ViewLoaded();
         }
+
     }
 }

@@ -11,6 +11,7 @@ namespace PosTicket.Repository.Interface
         public double bayar { get; set; }
         public string reff { get; set; }
         public string typebayar { get; set; }
+        public int rowpayment { get; set; }
         public double kembalian
         {
             get
@@ -19,7 +20,7 @@ namespace PosTicket.Repository.Interface
             }
             set { }
         }
+        public ICommand AddReffToPayCartCommand { get; set; }
         public ICommand DelToPayCartCommand { get; set; }
-
     }
 }

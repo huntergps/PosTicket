@@ -38,8 +38,13 @@ namespace PosTicket.ViewModel
         public ICommand PilihPelangganCommand { get; set; }
         public ICommand CancelPelangganCommand { get; set; }
         private ViewCustomer ViewCustomerWindow { get; set; }
-
         //Pelanggan
+
+        //rowpayment 
+        public ICommand AddReffToPayCartCommand { get; set; }
+        public ICommand DelToPayCartCommand { get; set; }
+        //rowpayment 
+
         public ICommand ReprintTiketCommand { get; set; }
         public ICommand FindTicketCommand { get; set; }
         public ICommand PrintTicketCommand { get; set; }
@@ -95,7 +100,12 @@ namespace PosTicket.ViewModel
             PilihPelangganCommand = new RelayCommand(o => PilihPelangganClick("PilihPelangganCommandButton"));
             CancelPelangganCommand = new RelayCommand(o => CancelPelangganClick("CancelPelangganButton"));
             //Pelanggan
-
+            
+            //rowpayment 
+            AddReffToPayCartCommand = new RelayCommand(AddReffToPayCartClick);
+            DelToPayCartCommand = new RelayCommand(DelToPayCartClick);
+            //rowpayment 
+            
             ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("PrintTiketCommandButton"));
             GetPermisionCommand = new RelayCommand(o => GetPermisionClick("PrintTiketCommandButton"));
             FindTicketCommand = new RelayCommand(o => FindTiketClick("FindTiketCommandButton"));
@@ -200,7 +210,7 @@ namespace PosTicket.ViewModel
                 return;
             }
             BayarList.Clear();
-            BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "" });
+            BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "", rowpayment=0 });
             RaisePropertyChanged("BayarList");
             paymentWindow.ShowDialog();
         }
@@ -315,6 +325,30 @@ namespace PosTicket.ViewModel
                 MaterialMessageBox.ShowDialog(posSessionCloseResponse.result.error.message, posSessionCloseResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
             }
         }
+        public void  AddReffToPayCartClick(object sender)
+        {
+            PayCart Databayar = new PayCart();
+            Databayar = BayarList[int.Parse(sender.ToString())] ;
+            MaterialMessageBox.ShowDialog("No row :" + sender.ToString() + " " + BayarList[0].reff);
+            int lastrow = BayarList.Count - 1;
+            RaisePropertyChanged("BayarList");
+            return;
+        }
+        public void DelToPayCartClick(object sender)
+        {
+            //MaterialMessageBox.ShowDialog("No row :" + sender.ToString());
+            if (BayarList.Count-1 == int.Parse(sender.ToString()))
+            {
+                MaterialMessageBox.ShowDialog("Pilih Payment yang akan dihapus...!");
+                return;
+            } else
+            {
+                //PayCart temp = BayarList[int.Parse(sender.ToString())];
+                BayarList.RemoveAt(int.Parse(sender.ToString()));
+                RaisePropertyChanged("BayarList");
+            }
+            
+        }
         public void AddToPayCart(PayCart sender)
         {
 
@@ -332,7 +366,7 @@ namespace PosTicket.ViewModel
             }
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
-            BayarList.Add(new PayCart { id = 0, totaljual = float.Parse(temp.kembalian.ToString()), bayar = 0, reff = "", typebayar = "" });
+            BayarList.Add(new PayCart { id = 0, totaljual = float.Parse(temp.kembalian.ToString()), bayar = 0, reff = "", typebayar = "", rowpayment = lastrow+1 });
             RaisePropertyChanged("BayarList");
         }
         public void ClosePayment(object sender)
@@ -611,7 +645,7 @@ namespace PosTicket.ViewModel
             set
             {
                 _BayarList = value;
-                RaisePropertyChanged("_BayarList");
+                RaisePropertyChanged("BayarList");
             }
         }
 
@@ -1089,7 +1123,11 @@ namespace PosTicket.ViewModel
         }
         private async void SendPaymentData(object sender)
         {
-
+            if (BayarList.Count - 1== 0)
+            {
+                MaterialMessageBox.ShowDialog("Lakukan Pembayaran terlebih dahulu...!");
+                return;
+            }
             PaymentTransactionRequest paymentTransactionRequest = new PaymentTransactionRequest();
 
             List<PaymentTransactionLineData> lineTransaksi = new List<PaymentTransactionLineData>();

@@ -19,6 +19,9 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="10*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="1*"/>
                 <RowDefinition Height="80*"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" >
@@ -27,21 +30,22 @@
                     <ColumnDefinition Width="60*"/>
                     <ColumnDefinition Width="20*"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Height="50" Command="{Binding ClosePaymentCommand}">
-                    <StackPanel>
-                        <TextBlock Text="Batal"/>
-                        <materialDesign:PackIcon Kind="StepBackward" Foreground="White" Width="Auto" Height="Auto"  />
+                <Button Grid.Column="0" Height="80" Command="{Binding ClosePaymentCommand}" Background="#FFC2185B">
+                    <StackPanel  Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <materialDesign:PackIcon  Kind="StepBackward" Foreground="White" Width="40" Height="45" HorizontalAlignment="Right" />
+                        <TextBlock Text=" Batal" FontSize="30"/>
                     </StackPanel>
                 </Button>
-                <Button  Grid.Column="2" Height="50" Command="{Binding ValidatePaymentCommand}">
-                    <StackPanel>
-                        <TextBlock Text="Validasi"/>
-                        <materialDesign:PackIcon Kind="StepForward" Foreground="White" Width="Auto" Height="Auto" />
+                <Button  Grid.Column="2" Height="80" Command="{Binding ValidatePaymentCommand}" Background="#FF1A237E">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <TextBlock Text="Validasi " FontSize="30"/>
+                        <materialDesign:PackIcon Kind="StepForward" Foreground="White" Width="40" Height="45" />
                     </StackPanel>
                 </Button>
                 <Label Content="P E M B A Y A R A N" Grid.Column="1" FontWeight="Bold" FontSize="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontFamily="Arial Black" Foreground="#FF472486" />
             </Grid>
-            <Grid Grid.Row="1" >
+            <Grid Grid.Row="2" Background="SlateBlue"/>
+            <Grid Grid.Row="4" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20*"/>
                     <ColumnDefinition Width="80*"/>
@@ -85,11 +89,18 @@
                                     <GridViewColumn DisplayMemberBinding="{Binding totaljual, StringFormat='N0'}" Header="Total Penjualan" Width="150" />
                                     <GridViewColumn DisplayMemberBinding="{Binding bayar, StringFormat='N0'}" Header="Bayar" Width="100" />
                                     <GridViewColumn DisplayMemberBinding="{Binding kembalian, StringFormat='N0'}" Header="Kembalian" Width="100" />
-                                    <GridViewColumn DisplayMemberBinding="{Binding typebayar}" Header="Referensi Bayar" Width="190" />
-                                    <GridViewColumn Header="Hapus" Width="100">
+                                    <GridViewColumn DisplayMemberBinding="{Binding typebayar}" Header="Referensi Bayar" Width="230" />
+                                    <GridViewColumn Header="Add Reff." Width="80">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Command="{Binding DelToPayCartCommand}" Content="hapus" />
+                                                <Button  Click="Reff_Click" Content="Reff" Width="60" CommandParameter="{Binding rowpayment}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Hapus" Width="90">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Click="Delete_Click" Content="Hapus" CommandParameter="{Binding rowpayment}"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>

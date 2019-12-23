@@ -9,7 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
+using PosTicket.ViewModel;
 namespace PosTicket.Views
 {
     /// <summary>
@@ -20,6 +20,18 @@ namespace PosTicket.Views
         public ViewPayment()
         {
             InitializeComponent();
+        }
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            PosMainViewModel CommandBindingsHapus = new PosMainViewModel();
+            Button btn = ((Button)sender);
+            btn.Command = CommandBindingsHapus.DelToPayCartCommand;
+        }
+        private void Reff_Click(object sender, RoutedEventArgs e)
+        {
+            PosMainViewModel CommandBindingsHapus = new PosMainViewModel();
+            Button btn = ((Button)sender);
+            btn.Command = CommandBindingsHapus.AddReffToPayCartCommand;
         }
     }
 }
