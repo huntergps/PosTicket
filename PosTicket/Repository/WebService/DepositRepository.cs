@@ -1,11 +1,7 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
-using System.Collections.Generic;
 using PosTicket.Repository.Interface;
-using PosTicket.Models;
 
 namespace PosTicket.Repository.WebService
 {
