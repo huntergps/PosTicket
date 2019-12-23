@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using PosTicket.Repository.PrinterData;
 using System.Threading;
 using System.Linq;
+using System.Collections;
 
 namespace PosTicket.ViewModel
 {

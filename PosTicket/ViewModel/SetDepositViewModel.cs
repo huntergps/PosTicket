@@ -20,9 +20,11 @@ namespace PosTicket.ViewModel
         public SetDepositViewModel()
         {
             OpenSessionCommand = new RelayCommand(o => OpenSessionClick("OpenSessionCommandButton"));
+
             readConfig = new ReadConfig();
             readDeposit = new ReadDepositResponse();
         }
+
         private List<Deposit> _depositList;
         public List<Deposit> DepositList
         {
@@ -215,11 +217,11 @@ namespace PosTicket.ViewModel
             linedata = new List<string>(); 
             linedata.Add( "DEPOSIT KASIR - " + ConfigList[0].current_ip);
             linedata.Add( "garis");
-            linedata.Add( "TOTAL DEPOSIT : " + OpeningBalanceInt.ToString());
+            linedata.Add( "TOTAL DEPOSIT : " + String.Format("{0:N}", OpeningBalanceInt));
             linedata.Add("garis");
             linedata.Add("100,000 X " + HundredValue + " = " + String.Format("{0:N}", (100000 * HundredValue)));
             linedata.Add(" 50,000 X " + FiftyValue + " = " + String.Format("{0:N}", (50000 * FiftyValue)));
-            linedata.Add(" 20,000 X " + TwentyValue + " = " + (20000 * TwentyValue)));
+            linedata.Add(" 20,000 X " + TwentyValue + " = " + String.Format("{0:N}", (20000 * TwentyValue)));
             linedata.Add(" 10,000 X " + TenValue + " = " + String.Format("{0:N}", (10000 * TenValue)));
             linedata.Add("  5,000 X " + FiveValue + " = " + String.Format("{0:N}", (5000 * FiveValue)));
             linedata.Add("  2,000 X " + TwoValue + " = " + String.Format("{0:N}", (2000 * TwoValue)));
@@ -236,14 +238,14 @@ namespace PosTicket.ViewModel
             linedata.Add((char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
             printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
             //sementara
-            //DepositData _depositData = new DepositData
-            //{
-            //    pos_ip = IpAddressValue,
-            //    opening_cash_balance = OpeningBalanceInt,
-            //    cash_detail = depositCashDetail
-            //};
-            //Deposit _depositRequest = new Deposit { data = _depositData };
-            //SendDepositData(_depositRequest);
+            DepositData _depositData = new DepositData
+            {
+                pos_ip = IpAddressValue,
+                opening_cash_balance = OpeningBalanceInt,
+                cash_detail = depositCashDetail
+            };
+            Deposit _depositRequest = new Deposit { data = _depositData };
+            SendDepositData(_depositRequest);
         }
         private void ShowMainWindow()
         {
