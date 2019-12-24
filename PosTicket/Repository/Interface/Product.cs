@@ -18,8 +18,10 @@ namespace PosTicket.Repository.Interface
         public string reference { get; set; }
         public bool is_ticket { get; set; }
         public int category_id { get; set; }
+        public int qty_minimum { get; set; }
         public string image_url { get; set; }
         public int product_price_id { get; set; }
+        public List<int> allowed_payment_method_ids { get; set; }
         public float price { get; set; }
         public ICommand AddToCartCommand { get; set; }
     }
