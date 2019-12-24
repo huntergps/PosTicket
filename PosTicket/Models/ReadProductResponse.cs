@@ -18,5 +18,10 @@ namespace PosTicket.Models
             Repository = new ProductRepository();
             return await Repository.GetProductAsync();
         }
+        public async Task<ProductPrice> GetProductPrice(ProductPriceRequest request)
+        {
+            Repository = new ProductRepository();
+            return await Repository.GetProductPrice(request);
+        }
     }
 }
