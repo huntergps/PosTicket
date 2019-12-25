@@ -39,11 +39,6 @@ namespace PosTicket.ViewModel
         private ViewCustomer ViewCustomerWindow { get; set; }
         //Pelanggan
 
-        //rowpayment 
-        public ICommand AddReffToPayCartCommand { get; set; }
-        public ICommand DelToPayCartCommand { get; set; }
-        //rowpayment 
-
         public ICommand ReprintTiketCommand { get; set; }
         public ICommand FindTicketCommand { get; set; }
         public ICommand PrintTicketCommand { get; set; }
@@ -99,11 +94,6 @@ namespace PosTicket.ViewModel
             PilihPelangganCommand = new RelayCommand(o => PilihPelangganClick("PilihPelangganCommandButton"));
             CancelPelangganCommand = new RelayCommand(o => CancelPelangganClick("CancelPelangganButton"));
             //Pelanggan
-            
-            //rowpayment 
-            AddReffToPayCartCommand = new RelayCommand(AddReffToPayCartClick);
-            DelToPayCartCommand = new RelayCommand(DelToPayCartClick);
-            //rowpayment 
             
             ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("PrintTiketCommandButton"));
             GetPermisionCommand = new RelayCommand(o => GetPermisionClick("PrintTiketCommandButton"));
@@ -209,7 +199,7 @@ namespace PosTicket.ViewModel
                 return;
             }
             BayarList.Clear();
-            BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "", rowpayment=0 });
+            BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "", rowpayment=0,AddReffToPayCartCommand=new RelayCommand (o => AddReffToPayCartClick(0))});
             RaisePropertyChanged("BayarList");
             paymentWindow.ShowDialog();
         }
@@ -383,10 +373,10 @@ namespace PosTicket.ViewModel
         }
         public void  AddReffToPayCartClick(object sender)
         {
-            PayCart Databayar = new PayCart();
-            Databayar = BayarList[int.Parse(sender.ToString())] ;
-            MaterialMessageBox.ShowDialog("No row :" + sender.ToString() + " " + BayarList[0].reff);
-            int lastrow = BayarList.Count - 1;
+            //MaterialMessageBox.ShowDialog("No row :" + sender.ToString() + " " + BayarList[int.Parse(sender.ToString())].typebayar);
+            PayCart temp = new PayCart(); 
+            temp = BayarList[int.Parse(sender.ToString())];
+
             RaisePropertyChanged("BayarList");
             return;
         }
@@ -422,7 +412,7 @@ namespace PosTicket.ViewModel
             }
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
-            BayarList.Add(new PayCart { id = 0, totaljual = float.Parse(temp.kembalian.ToString()), bayar = 0, reff = "", typebayar = "", rowpayment = lastrow+1 });
+            BayarList.Add(new PayCart { id = 0, totaljual = float.Parse(temp.kembalian.ToString()), bayar = 0, reff = "", typebayar = "", rowpayment = lastrow+1, AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow + 1)) });
             RaisePropertyChanged("BayarList");
         }
         public void ClosePayment(object sender)
@@ -458,13 +448,15 @@ namespace PosTicket.ViewModel
             PayCart temp = new PayCart();
             temp = BayarList[lastrow];
             temp.bayar = temp.bayar + byr;
+            //temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
-
+            
             lastrow = BayarList.Count - 1;
             PayCart temp2 = new PayCart();
             temp2 = BayarList[lastrow];
             temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
+            //temp2.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp2);
             RaisePropertyChanged("BayarList");
@@ -487,7 +479,7 @@ namespace PosTicket.ViewModel
             {
                 temp.bayar = double.Parse(temp.bayar + sender.ToString());
             }
-
+            //temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
 
@@ -495,6 +487,7 @@ namespace PosTicket.ViewModel
             PayCart temp2 = new PayCart();
             temp2 = BayarList[lastrow];
             temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
+            //temp2.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp2);
             RaisePropertyChanged("BayarList");
@@ -511,7 +504,7 @@ namespace PosTicket.ViewModel
             PayCart temp = new PayCart();
             temp = BayarList[lastrow];
             temp.bayar = 0;
-
+            //temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
 
@@ -519,6 +512,7 @@ namespace PosTicket.ViewModel
             PayCart temp2 = new PayCart();
             temp2 = BayarList[lastrow];
             temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
+            //temp2.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp2);
             RaisePropertyChanged("BayarList");
@@ -564,6 +558,7 @@ namespace PosTicket.ViewModel
             {
                 temp.bayar = double.Parse(temp.bayar.ToString().Substring(0, temp.bayar.ToString().Length - 1));
             }
+            temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow));
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
 
@@ -571,6 +566,7 @@ namespace PosTicket.ViewModel
             PayCart temp2 = new PayCart();
             temp2 = BayarList[lastrow];
             temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
+            temp2.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow));
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp2);
             RaisePropertyChanged("BayarList");
