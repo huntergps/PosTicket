@@ -7,5 +7,6 @@ namespace PosTicket.Repository.Interface
     {
         Task<ProductCategory> GetProductCategoryAsync();
         Task<Product> GetProductAsync();
+        Task<ProductPrice> GetProductPrice(ProductPriceRequest productPriceRequest);
     }
 }

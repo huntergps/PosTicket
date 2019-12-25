@@ -28,5 +28,15 @@ namespace PosTicket.Repository.WebService
             Product productResponse = JsonConvert.DeserializeObject<Product>(response.Content);
             return productResponse;
         }
+        public async Task<ProductPrice> GetProductPrice(ProductPriceRequest productPriceRequest)
+        {
+            RestClient client = WebServiceContext.GetUrl("/api/v2/product/price");
+            RestRequest request = WebServiceContext.GetRequestBody("post");
+
+            request.AddParameter("application/json", JsonConvert.SerializeObject(productPriceRequest), ParameterType.RequestBody);
+            IRestResponse response = await client.ExecuteTaskAsync(request);
+            ProductPrice productPriceResponse = JsonConvert.DeserializeObject<ProductPrice>(response.Content);
+            return productPriceResponse;
+        }
     }
 }

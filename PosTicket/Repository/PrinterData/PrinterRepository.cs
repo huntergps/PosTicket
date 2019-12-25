@@ -87,8 +87,11 @@ namespace PosTicket.Repository.PrinterData
                 //di.pDataType = "XPS_PASS";
                 di.pDataType = dataType;
 
-                // Open the printer.
-                if (OpenPrinter(szPrinterName.Normalize(), out hPrinter, IntPtr.Zero))
+                if (!OpenPrinter(szPrinterName.Normalize(), out hPrinter, IntPtr.Zero))
+                {
+                    return false;
+                }
+                else
                 {
                     // Start a document.
                     if (StartDocPrinter(hPrinter, 1, di))
@@ -226,7 +229,7 @@ namespace PosTicket.Repository.PrinterData
                 label.AppendLine("^FO10,480^ABB,5,10^FD" + printer.line5 + "^FS");
                 label.AppendLine("^FO30,615^ADN,12,8^FD" + printer.line6 + "^FS");
                 label.AppendLine("^XZ");
-                if(SendStringToPrinter(printerName, label.ToString(), "XPS_PASS") == true)
+                if(SendStringToPrinter(printerName, label.ToString(), "RAW") == true)
                 {
                     await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "printed");
                 }
