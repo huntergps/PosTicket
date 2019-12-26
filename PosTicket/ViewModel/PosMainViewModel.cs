@@ -69,6 +69,7 @@ namespace PosTicket.ViewModel
         private ViewReprintTicket ReprintTiketWindow { get; set; }
         private ViewReprintReceipt ReprintReceiptWindow { get; set; }
         private ViewPermision PermisionWindow { get; set; }
+        private ViewsRefferensi ViewRefferensiWindow { get; set; }
         private ViewCloseSession CloseSessionWindow { get; set; }
         public Action CloseAction { get; set; }
         private ReadLoginResponse readLoginResponse { get; set; }
@@ -142,6 +143,8 @@ namespace PosTicket.ViewModel
             ViewSalesWindow.DataContext = this;
             ViewCustomerWindow = new ViewCustomer();
             ViewCustomerWindow.DataContext = this;
+            ViewRefferensiWindow = new ViewsRefferensi();
+            ViewRefferensiWindow.DataContext = this;
 
             readSession = new ReadSession();
             SessionList = readSession.GetSession();
@@ -181,7 +184,16 @@ namespace PosTicket.ViewModel
                 RaisePropertyChanged("UsernameValue");
             }
         }
-
+        private string _paymentname;
+        public string paymentname
+        {
+            get { return _paymentname; }
+            set
+            {
+                _paymentname = value;
+                RaisePropertyChanged("paymentname");
+            }
+        }
         public string _passwordValue;
         public string Password
         {
@@ -378,7 +390,8 @@ namespace PosTicket.ViewModel
             //MaterialMessageBox.ShowDialog("No row :" + sender.ToString() + " " + BayarList[int.Parse(sender.ToString())].typebayar);
             PayCart temp = new PayCart(); 
             temp = BayarList[int.Parse(sender.ToString())];
-
+            paymentname = temp.typebayar;
+            ViewRefferensiWindow.ShowDialog();
             RaisePropertyChanged("BayarList");
             return;
         }
@@ -407,9 +420,11 @@ namespace PosTicket.ViewModel
             }
             temp.id = sender.id;
             temp.typebayar = sender.reff;
+            temp.reff = sender.typebayar;
             if (sender.typebayar != "cash")
             {
                 temp.bayar = temp.totaljual;
+                temp.reff = "";
             }
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
@@ -1153,18 +1168,15 @@ namespace PosTicket.ViewModel
         {
             readProductPriceResponse = new ReadProductResponse();
             ProductPrice ProductPriceResponse = await readProductPriceResponse.GetProductPrice(ParamProduct);
-            if (ProductPriceResponse.result[0].error == null)
+            if (ProductPriceResponse.result.error == null)
             {
 
-                //foreach (ProductPrice ProductPriceDetil in ProductPriceResponse.result)
-                //{
 
-                //}
 
             }
             else
             {
-                MaterialMessageBox.ShowDialog(ProductPriceResponse.result[0].error.message.ToString(), ProductPriceResponse.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+                MaterialMessageBox.ShowDialog(ProductPriceResponse.result.error.message.ToString(), ProductPriceResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
             }
 
         }

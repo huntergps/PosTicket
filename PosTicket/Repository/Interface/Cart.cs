@@ -9,7 +9,10 @@ namespace PosTicket.Repository.Interface
         public int product_price_id { get; set; }
         public string name { get; set; }
         public int qty { get; set; }
+        public int qty_bonus { get; set; }
         public float price { get; set; }
+
+        public int qty_minimum { get; set; }
 
         public float total {
             get

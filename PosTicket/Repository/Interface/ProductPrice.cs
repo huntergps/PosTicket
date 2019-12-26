@@ -7,13 +7,13 @@ namespace PosTicket.Repository.Interface
 {
     public class ProductPrice
     {
-        public List<PaymentData> result { get; set; }
+        public ProductPriceData result { get; set; }
         public string version { get; set; }
     }
     public class ProductPriceData
     {
         public ErrorMessage error { get; set; }
-        public AllowedPaymentMethod allowed_payment_method_ids { get; set; }
+        public List<AllowedPaymentMethod> allowed_payment_method_ids { get; set; }
         public bool success { get; set; }
         public int product_price_id { get; set; }
         public float price_unit { get; set; }

@@ -89,7 +89,7 @@
                                     <GridViewColumn DisplayMemberBinding="{Binding totaljual, StringFormat='N0'}" Header="Total Penjualan" Width="150" />
                                     <GridViewColumn DisplayMemberBinding="{Binding bayar, StringFormat='N0'}" Header="Bayar" Width="100" />
                                     <GridViewColumn DisplayMemberBinding="{Binding kembalian, StringFormat='N0'}" Header="Kembalian" Width="100" />
-                                    <GridViewColumn DisplayMemberBinding="{Binding typebayar}" Header="Referensi Bayar" Width="230" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding reff}" Header="Referensi Bayar" Width="230" />
                                     <GridViewColumn Header="Add Reff." Width="80">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
