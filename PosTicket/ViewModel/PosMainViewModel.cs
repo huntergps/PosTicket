@@ -73,6 +73,7 @@ namespace PosTicket.ViewModel
         public Action CloseAction { get; set; }
         private ReadLoginResponse readLoginResponse { get; set; }
         private ReadPrintTicketResponse readPrintTicketResponse { get; set; }
+        private ReadProductResponse readProductPriceResponse { get; set; }
         private ReadPrintReceiptResponse readPrintReceiptResponse { get; set; }
         public PosMainViewModel()
         {
@@ -122,6 +123,7 @@ namespace PosTicket.ViewModel
             readProduct = new ReadProductResponse();
             readPayment = new ReadPaymentResponse();
             readPrintTicketResponse = new ReadPrintTicketResponse();
+            readProductPriceResponse = new ReadProductResponse();
             paymentWindow = new ViewPayment();
             paymentWindow.DataContext = this;
             GetLockResponseCommand = new RelayCommand(GetLockResponseClick);
@@ -397,7 +399,6 @@ namespace PosTicket.ViewModel
         }
         public void AddToPayCart(PayCart sender)
         {
-
             int lastrow = BayarList.Count - 1;
             PayCart temp = BayarList[lastrow];
             if (temp.totaljual <= 0)
@@ -606,38 +607,43 @@ namespace PosTicket.ViewModel
         }
         public void AddToCart(Cart sender)
         {
-            bool IsNew = true;
-            int Dataindex = 0;
-            if (CartList != null)
-            {
-                foreach (Cart cartItem in CartList)
-                {
+            ProductPriceRequest paramRequest = new ProductPriceRequest();
+            paramRequest.product_id = sender.id;
+            paramRequest.qty = 1;
+            GetProductPrice(paramRequest);
 
-                    if (cartItem.id == sender.id)
-                    {
-                        IsNew = false;
-                        cartItem.qty += 1;
-                        int index = Dataindex;
-                        Cart temp = new Cart();
-                        temp = cartItem;
-                        CartList.RemoveAt(index);
-                        CartList.Insert(index, (Cart)temp);
-                        break;
-                    }
-                    else
-                    {
-                        IsNew = true;
-                    }
-                    Dataindex += 1;
-                }
-                if (IsNew == true)
-                {
-                    CartList.Add(sender);
-                }
-            }
-            RaisePropertyChanged("CartList");
-            RaisePropertyChanged("GrandTotal");
-            RaisePropertyChanged("TotalTiket");
+            //bool IsNew = true;
+            //int Dataindex = 0;
+            //if (CartList != null)
+            //{
+            //    foreach (Cart cartItem in CartList)
+            //    {
+
+            //        if (cartItem.id == sender.id)
+            //        {
+            //            IsNew = false;
+            //            cartItem.qty += 1;
+            //            int index = Dataindex;
+            //            Cart temp = new Cart();
+            //            temp = cartItem;
+            //            CartList.RemoveAt(index);
+            //            CartList.Insert(index, (Cart)temp);
+            //            break;
+            //        }
+            //        else
+            //        {
+            //            IsNew = true;
+            //        }
+            //        Dataindex += 1;
+            //    }
+            //    if (IsNew == true)
+            //    {
+            //        CartList.Add(sender);
+            //    }
+            //}
+            //RaisePropertyChanged("CartList");
+            //RaisePropertyChanged("GrandTotal");
+            //RaisePropertyChanged("TotalTiket");
         }
         private PayCart _SelectedPayment;
         public PayCart SelectedPayment
@@ -1143,7 +1149,25 @@ namespace PosTicket.ViewModel
             }
 
         }
+        private async void GetProductPrice(ProductPriceRequest ParamProduct)
+        {
+            readProductPriceResponse = new ReadProductResponse();
+            ProductPrice ProductPriceResponse = await readProductPriceResponse.GetProductPrice(ParamProduct);
+            if (ProductPriceResponse.result[0].error == null)
+            {
 
+                //foreach (ProductPrice ProductPriceDetil in ProductPriceResponse.result)
+                //{
+
+                //}
+
+            }
+            else
+            {
+                MaterialMessageBox.ShowDialog(ProductPriceResponse.result[0].error.message.ToString(), ProductPriceResponse.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+            }
+
+        }
         private ObservableCollection<ListReceiptResponse> _ReceiptList;
         public ObservableCollection<ListReceiptResponse> ReceiptList
         {
