@@ -39,6 +39,12 @@ namespace PosTicket.ViewModel
         private ViewCustomer ViewCustomerWindow { get; set; }
         //Pelanggan
 
+        //Referensi
+        public ICommand ReferensiOkCommand { get; set; }
+        public ICommand ReferensiCancelCommand { get; set; }
+        
+        //Referensi
+
         public ICommand ReprintTiketCommand { get; set; }
         public ICommand FindTicketCommand { get; set; }
         public ICommand PrintTicketCommand { get; set; }
@@ -96,7 +102,11 @@ namespace PosTicket.ViewModel
             PilihPelangganCommand = new RelayCommand(o => PilihPelangganClick("PilihPelangganCommandButton"));
             CancelPelangganCommand = new RelayCommand(o => CancelPelangganClick("CancelPelangganButton"));
             //Pelanggan
-            
+            ReferensiOkCommand = new RelayCommand(o => ReferensiOkClick("ReferensiOkCommandButton"));
+            ReferensiCancelCommand = new RelayCommand(o => ReferensiCancelClick("ReferensiCancelCommandButton"));
+            //Referensi
+
+            //Referensi
             ReprintTiketCommand = new RelayCommand(o => ReprintTiketClick("PrintTiketCommandButton"));
             GetPermisionCommand = new RelayCommand(o => GetPermisionClick("PrintTiketCommandButton"));
             FindTicketCommand = new RelayCommand(o => FindTiketClick("FindTiketCommandButton"));
@@ -184,6 +194,7 @@ namespace PosTicket.ViewModel
                 RaisePropertyChanged("UsernameValue");
             }
         }
+
         private string _paymentname;
         public string paymentname
         {
@@ -194,6 +205,18 @@ namespace PosTicket.ViewModel
                 RaisePropertyChanged("paymentname");
             }
         }
+
+        private string _Referensivalue;
+        public string Referensivalue
+        {
+            get { return _Referensivalue; }
+            set
+            {
+                _Referensivalue = value;
+                RaisePropertyChanged("Referensivalue");
+            }
+        }
+
         public string _passwordValue;
         public string Password
         {
@@ -213,7 +236,7 @@ namespace PosTicket.ViewModel
                 return;
             }
             BayarList.Clear();
-            BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "", rowpayment=0,AddReffToPayCartCommand=new RelayCommand (o => AddReffToPayCartClick(0))});
+            BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "", rowpayment=0,AddReffToPayCartCommand=new RelayCommand (AddReffToPayCartClick), DelToPayCartCommand = new RelayCommand(DelToPayCartClick)});
             RaisePropertyChanged("BayarList");
             paymentWindow.ShowDialog();
         }
@@ -391,24 +414,73 @@ namespace PosTicket.ViewModel
             PayCart temp = new PayCart(); 
             temp = BayarList[int.Parse(sender.ToString())];
             paymentname = temp.typebayar;
+            Referensivalue = temp.reff;
+            if (temp.reff == "cash")
+            {
+                MaterialMessageBox.ShowDialog("Tidak perlu rubah referensi...!", "Input Referensi", MessageBoxButton.OK, PackIconKind.UserWarning, PrimaryColor.LightBlue);
+                return;
+
+            } 
             ViewRefferensiWindow.ShowDialog();
+            temp.reff = Referensivalue;
+            BayarList.RemoveAt(int.Parse(sender.ToString()));
+            BayarList.Insert(int.Parse(sender.ToString()), (PayCart)temp);
             RaisePropertyChanged("BayarList");
-            return;
+        }
+        public void ReferensiOkClick(object sender)
+        {
+            if (Referensivalue == "")
+            {
+                MaterialMessageBox.ShowDialog("Referensi Harus diisi...!", "Input Referensi", MessageBoxButton.OK, PackIconKind.UserWarning, PrimaryColor.LightBlue);
+                return;
+            } else
+            {
+                RaisePropertyChanged("Referensivalue");
+            }
+            ReferensiCancelClick(sender);
+        }
+        public void ReferensiCancelClick(object sender)
+        {
+            ViewRefferensiWindow.Hide();
         }
         public void DelToPayCartClick(object sender)
         {
             //MaterialMessageBox.ShowDialog("No row :" + sender.ToString());
-            if (BayarList.Count-1 == int.Parse(sender.ToString()))
+            if (BayarList.Count - 1 == int.Parse(sender.ToString()))
             {
                 MaterialMessageBox.ShowDialog("Pilih Payment yang akan dihapus...!");
                 return;
-            } else
+            }
+            else
             {
                 //PayCart temp = BayarList[int.Parse(sender.ToString())];
                 BayarList.RemoveAt(int.Parse(sender.ToString()));
                 RaisePropertyChanged("BayarList");
+                ObservableCollection<PayCart> Datanew = new ObservableCollection<PayCart>();
+                //Datanew = BayarList;
+                //BayarList.Clear();
+                RaisePropertyChanged("BayarList");
+
+                for (var i = 0; i <= BayarList.Count - 1; i++)
+                {
+                    PayCart temp = BayarList[i];
+
+                    if (i == 0)
+                    {
+                        temp.totaljual = _grandTotal;
+                    }
+                    else
+                    {
+                        temp.totaljual = (float.Parse(BayarList[i - 1].kembalian.ToString()) * -1);
+                    }
+                    temp.rowpayment = i;
+                    Datanew.Add(new PayCart { id =temp.id, totaljual = temp.totaljual, bayar = temp.bayar, reff = temp.reff, typebayar = temp.typebayar, rowpayment = i, AddReffToPayCartCommand = new RelayCommand(AddReffToPayCartClick), DelToPayCartCommand = new RelayCommand(DelToPayCartClick) });
+                    RaisePropertyChanged("Datanew");
+                }
+                BayarList.Clear();
+                BayarList = Datanew;
+                RaisePropertyChanged("BayarList");
             }
-            
         }
         public void AddToPayCart(PayCart sender)
         {
@@ -424,11 +496,11 @@ namespace PosTicket.ViewModel
             if (sender.typebayar != "cash")
             {
                 temp.bayar = temp.totaljual;
-                temp.reff = "";
+                temp.reff = sender.reff;
             }
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
-            BayarList.Add(new PayCart { id = 0, totaljual = float.Parse(temp.kembalian.ToString()), bayar = 0, reff = "", typebayar = "", rowpayment = lastrow+1, AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow + 1)) });
+            BayarList.Add(new PayCart { id = 0, totaljual = float.Parse(temp.kembalian.ToString()), bayar = 0, reff = "", typebayar = "", rowpayment = lastrow+1, AddReffToPayCartCommand = new RelayCommand(AddReffToPayCartClick), DelToPayCartCommand = new RelayCommand(DelToPayCartClick)});
             RaisePropertyChanged("BayarList");
         }
         public void ClosePayment(object sender)
@@ -491,11 +563,23 @@ namespace PosTicket.ViewModel
             if (temp.bayar == 0)
             {
                 temp.bayar = float.Parse(sender.ToString());
-            } else
+            }
+            else
             {
+
+                if (temp.reff != "cash")
+                {
+                    if (temp.totaljual < double.Parse(temp.bayar + sender.ToString()))
+                    {
+                        MaterialMessageBox.ShowDialog("Jika Non Tunai Nila Bayar Tidak Boleh Besar Dari total Jual...!", "Input Referensi", MessageBoxButton.OK, PackIconKind.UserWarning, PrimaryColor.LightBlue);
+                        return;
+                    }
+                }
                 temp.bayar = double.Parse(temp.bayar + sender.ToString());
             }
+
             //temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
+            temp.rowpayment = lastrow;
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
 
@@ -521,6 +605,7 @@ namespace PosTicket.ViewModel
             temp = BayarList[lastrow];
             temp.bayar = 0;
             //temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
+            temp.rowpayment = lastrow;
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
 
@@ -574,7 +659,8 @@ namespace PosTicket.ViewModel
             {
                 temp.bayar = double.Parse(temp.bayar.ToString().Substring(0, temp.bayar.ToString().Length - 1));
             }
-            temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow));
+            //temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow));
+            temp.rowpayment = lastrow;
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
 
@@ -582,7 +668,7 @@ namespace PosTicket.ViewModel
             PayCart temp2 = new PayCart();
             temp2 = BayarList[lastrow];
             temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
-            temp2.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow));
+            //temp2.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow));
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp2);
             RaisePropertyChanged("BayarList");
@@ -622,43 +708,43 @@ namespace PosTicket.ViewModel
         }
         public void AddToCart(Cart sender)
         {
-            ProductPriceRequest paramRequest = new ProductPriceRequest();
-            paramRequest.product_id = sender.id;
-            paramRequest.qty = 1;
-            GetProductPrice(paramRequest);
+            
+            bool IsNew = true;
+            int Dataindex = 0;
+            if (CartList != null)
+            {
+                foreach (Cart cartItem in CartList)
+                {
 
-            //bool IsNew = true;
-            //int Dataindex = 0;
-            //if (CartList != null)
-            //{
-            //    foreach (Cart cartItem in CartList)
-            //    {
-
-            //        if (cartItem.id == sender.id)
-            //        {
-            //            IsNew = false;
-            //            cartItem.qty += 1;
-            //            int index = Dataindex;
-            //            Cart temp = new Cart();
-            //            temp = cartItem;
-            //            CartList.RemoveAt(index);
-            //            CartList.Insert(index, (Cart)temp);
-            //            break;
-            //        }
-            //        else
-            //        {
-            //            IsNew = true;
-            //        }
-            //        Dataindex += 1;
-            //    }
-            //    if (IsNew == true)
-            //    {
-            //        CartList.Add(sender);
-            //    }
-            //}
-            //RaisePropertyChanged("CartList");
-            //RaisePropertyChanged("GrandTotal");
-            //RaisePropertyChanged("TotalTiket");
+                    if (cartItem.id == sender.id)
+                    {
+                        IsNew = false;
+                        cartItem.qty += 1;
+                        int index = Dataindex;
+                        Cart temp = new Cart();
+                        temp = cartItem;
+                        CartList.RemoveAt(index);
+                        CartList.Insert(index, (Cart)temp);
+                        break;
+                    }
+                    else
+                    {
+                        IsNew = true;
+                    }
+                    Dataindex += 1;
+                }
+                if (IsNew == true)
+                {
+                    //ProductPriceRequest paramRequest = new ProductPriceRequest();
+                    //paramRequest.product_id = sender.id;
+                    //paramRequest.qty = 1;
+                    //GetProductPrice(paramRequest);
+                    CartList.Add(sender);
+                }
+            }
+            RaisePropertyChanged("CartList");
+            RaisePropertyChanged("GrandTotal");
+            RaisePropertyChanged("TotalTiket");
         }
         private PayCart _SelectedPayment;
         public PayCart SelectedPayment
