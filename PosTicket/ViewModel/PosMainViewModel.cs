@@ -419,7 +419,6 @@ namespace PosTicket.ViewModel
             {
                 MaterialMessageBox.ShowDialog("Tidak perlu rubah referensi...!", "Input Referensi", MessageBoxButton.OK, PackIconKind.UserWarning, PrimaryColor.LightBlue);
                 return;
-
             } 
             ViewRefferensiWindow.ShowDialog();
             temp.reff = Referensivalue;
@@ -604,7 +603,6 @@ namespace PosTicket.ViewModel
             PayCart temp = new PayCart();
             temp = BayarList[lastrow];
             temp.bayar = 0;
-            //temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
             temp.rowpayment = lastrow;
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
@@ -613,7 +611,6 @@ namespace PosTicket.ViewModel
             PayCart temp2 = new PayCart();
             temp2 = BayarList[lastrow];
             temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
-            //temp2.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick());
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp2);
             RaisePropertyChanged("BayarList");
@@ -659,7 +656,6 @@ namespace PosTicket.ViewModel
             {
                 temp.bayar = double.Parse(temp.bayar.ToString().Substring(0, temp.bayar.ToString().Length - 1));
             }
-            //temp.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow));
             temp.rowpayment = lastrow;
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp);
@@ -668,7 +664,6 @@ namespace PosTicket.ViewModel
             PayCart temp2 = new PayCart();
             temp2 = BayarList[lastrow];
             temp2.totaljual = float.Parse(temp.kembalian.ToString()) * -1;
-            //temp2.AddReffToPayCartCommand = new RelayCommand(o => AddReffToPayCartClick(lastrow));
             BayarList.RemoveAt(lastrow);
             BayarList.Insert(lastrow, (PayCart)temp2);
             RaisePropertyChanged("BayarList");
@@ -735,10 +730,15 @@ namespace PosTicket.ViewModel
                 }
                 if (IsNew == true)
                 {
-                    //ProductPriceRequest paramRequest = new ProductPriceRequest();
-                    //paramRequest.product_id = sender.id;
-                    //paramRequest.qty = 1;
-                    //GetProductPrice(paramRequest);
+                    if (sender.qty_minimum != 0)
+                    {
+                        sender.qty = sender.qty_minimum;
+                    }
+                    ProductPriceRequest paramRequest = new ProductPriceRequest();
+                    paramRequest.product_id = sender.id;
+                    paramRequest.qty = int.Parse(sender.qty.ToString());
+                    GetProductPrice(paramRequest);
+                    sender.qty_bonus = int.Parse(dataprice.qty_bonus.ToString());
                     CartList.Add(sender);
                 }
             }
@@ -1126,6 +1126,7 @@ namespace PosTicket.ViewModel
                                 name = productData.name,
                                 qty = 1,
                                 price = productData.price,
+                                qty_minimum =productData.qty_minimum,
                                 product_price_id = productData.product_price_id
                             }));
                         if (productCategoryData.products == null) productCategoryData.products = new List<ProductData>();
@@ -1249,16 +1250,28 @@ namespace PosTicket.ViewModel
                 MaterialMessageBox.ShowDialog(PrintTicketResponse.result[0].error.message.ToString(), PrintTicketResponse.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
             }
 
+
+        }
+        private ProductPriceData _dataprice;
+        public ProductPriceData dataprice
+        {
+            get { return _dataprice; }
+            set
+            {
+                _dataprice = value;
+                RaisePropertyChanged("dataprice");
+            }
         }
         private async void GetProductPrice(ProductPriceRequest ParamProduct)
-        {
+        {   
             readProductPriceResponse = new ReadProductResponse();
+            dataprice = new ProductPriceData();
             ProductPrice ProductPriceResponse = await readProductPriceResponse.GetProductPrice(ParamProduct);
             if (ProductPriceResponse.result.error == null)
             {
-
-
-
+                dataprice.price_unit = ProductPriceResponse.result.price_unit;
+                dataprice.product_price_id = ProductPriceResponse.result.product_price_id;
+                dataprice.qty_bonus = ProductPriceResponse.result.qty_bonus;
             }
             else
             {

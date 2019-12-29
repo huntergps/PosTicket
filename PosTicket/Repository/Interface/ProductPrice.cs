@@ -17,7 +17,7 @@ namespace PosTicket.Repository.Interface
         public bool success { get; set; }
         public int product_price_id { get; set; }
         public float price_unit { get; set; }
-        public int qty_bonus { get; set; }
+        public float qty_bonus { get; set; }
         
     }
     public class AllowedPaymentMethod

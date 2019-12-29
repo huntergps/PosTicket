@@ -75,6 +75,7 @@
                                         <GridView>
                                             <GridViewColumn DisplayMemberBinding="{Binding name}" Header="Name" Width="280" />
                                             <GridViewColumn DisplayMemberBinding="{Binding qty}" Header="Qty" />
+                                            <GridViewColumn DisplayMemberBinding="{Binding qty_bonus}" Header="QtyBonus" />
                                             <GridViewColumn CellTemplate="{StaticResource priceHeader}" Header="Price" Width="auto"/>
                                             <GridViewColumn CellTemplate="{StaticResource subtotalHeader}" Header="Subtotal"/>
                                         </GridView>
