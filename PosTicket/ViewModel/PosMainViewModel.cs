@@ -228,13 +228,60 @@ namespace PosTicket.ViewModel
             }
         }
         public Session SessionList { get; set; }
-        public void SetPayment(object sender)
+        public async void SetPayment(object sender)
         {
             if (_grandTotal <= 0)
             {
                 MaterialMessageBox.ShowDialog("Belum ada transaksi...!");
                 return;
             }
+            int Dataindex = 0;
+
+
+            foreach (Cart cartItem in CartList)
+            {
+                if (cartItem.qty_minimum > cartItem.qty)
+                {
+                    MaterialMessageBox.ShowDialog("Qty Produck : " + cartItem.name + " Tidak boleh kurang dari : " + cartItem.qty_minimum + " ...!");
+                    cartItem.qty = cartItem.qty_minimum;
+                    Cart temp = new Cart();
+                    temp = cartItem;
+                    CartList.RemoveAt(Dataindex);
+                    CartList.Insert(Dataindex, (Cart)temp);
+                    RaisePropertyChanged("CartList");
+                    RaisePropertyChanged("GrandTotal");
+                    RaisePropertyChanged("TotalTiket");
+                    return;
+                }
+                ProductPriceRequest paramRequest = new ProductPriceRequest();
+                paramRequest.product_id = cartItem.id;
+                paramRequest.qty = int.Parse(cartItem.qty.ToString());
+                ProductPrice ProductPriceResponse = await readProductPriceResponse.GetProductPrice(paramRequest);
+                if (ProductPriceResponse.result.error == null)
+                {
+                    Cart temp = new Cart();
+                    temp.qty_bonus = int.Parse(ProductPriceResponse.result.qty_bonus.ToString());
+                    temp.product_price_id = ProductPriceResponse.result.product_price_id;
+                    temp.price = ProductPriceResponse.result.price_unit;
+                    if (temp.qty_bonus != cartItem.qty_bonus || temp.product_price_id != cartItem.product_price_id || temp.price != cartItem.price)
+                    {
+                        MaterialMessageBox.ShowDialog("Ada Perubahan Parameter Price atau Qty Bonus Pada Produck : " + cartItem.name + " ...!");
+                        cartItem.qty_bonus = int.Parse(ProductPriceResponse.result.qty_bonus.ToString());
+                        cartItem.product_price_id = ProductPriceResponse.result.product_price_id;
+                        cartItem.price = ProductPriceResponse.result.price_unit;
+                        temp = cartItem;
+                        CartList.RemoveAt(Dataindex);
+                        CartList.Insert(Dataindex, (Cart)temp);
+                        RaisePropertyChanged("CartList");
+                        RaisePropertyChanged("GrandTotal");
+                        RaisePropertyChanged("TotalTiket");
+                        return;
+                    }
+                    
+                }
+                Dataindex += 1;
+            }
+
             BayarList.Clear();
             BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "", rowpayment=0,AddReffToPayCartCommand=new RelayCommand (AddReffToPayCartClick), DelToPayCartCommand = new RelayCommand(DelToPayCartClick)});
             RaisePropertyChanged("BayarList");
@@ -701,9 +748,9 @@ namespace PosTicket.ViewModel
             RaisePropertyChanged("GrandTotal");
             RaisePropertyChanged("TotalTiket");
         }
-        public void AddToCart(Cart sender)
+        public async void AddToCart(Cart sender)
         {
-            
+            ProductPriceRequest paramRequest = new ProductPriceRequest();
             bool IsNew = true;
             int Dataindex = 0;
             if (CartList != null)
@@ -715,6 +762,15 @@ namespace PosTicket.ViewModel
                     {
                         IsNew = false;
                         cartItem.qty += 1;
+                        paramRequest.product_id = cartItem.id;
+                        paramRequest.qty = int.Parse(cartItem.qty.ToString());
+                        ProductPrice ProductPriceResponse = await readProductPriceResponse.GetProductPrice(paramRequest);
+                        if (ProductPriceResponse.result.error == null)
+                        {
+                            cartItem.qty_bonus = int.Parse(ProductPriceResponse.result.qty_bonus.ToString());
+                            cartItem.product_price_id = ProductPriceResponse.result.product_price_id;
+                            cartItem.price = ProductPriceResponse.result.price_unit;
+                        }
                         int index = Dataindex;
                         Cart temp = new Cart();
                         temp = cartItem;
@@ -734,11 +790,15 @@ namespace PosTicket.ViewModel
                     {
                         sender.qty = sender.qty_minimum;
                     }
-                    ProductPriceRequest paramRequest = new ProductPriceRequest();
                     paramRequest.product_id = sender.id;
                     paramRequest.qty = int.Parse(sender.qty.ToString());
-                    GetProductPrice(paramRequest);
-                    sender.qty_bonus = int.Parse(dataprice.qty_bonus.ToString());
+                    ProductPrice ProductPriceResponse = await readProductPriceResponse.GetProductPrice(paramRequest);
+                    if (ProductPriceResponse.result.error == null)
+                    {
+                        sender.qty_bonus = int.Parse(ProductPriceResponse.result.qty_bonus.ToString());
+                        sender.product_price_id = ProductPriceResponse.result.product_price_id;
+                        sender.price = ProductPriceResponse.result.price_unit;
+                    }
                     CartList.Add(sender);
                 }
             }
@@ -833,7 +893,7 @@ namespace PosTicket.ViewModel
                 _TotalTiket = 0;
                 foreach (Cart cartItem in CartList)
                 {
-                    _TotalTiket += cartItem.qty;
+                    _TotalTiket += cartItem.qty + cartItem.qty_bonus;
                 }
                 return _TotalTiket.ToString("N0");
             }
@@ -1265,7 +1325,7 @@ namespace PosTicket.ViewModel
         private async void GetProductPrice(ProductPriceRequest ParamProduct)
         {   
             readProductPriceResponse = new ReadProductResponse();
-            dataprice = new ProductPriceData();
+            
             ProductPrice ProductPriceResponse = await readProductPriceResponse.GetProductPrice(ParamProduct);
             if (ProductPriceResponse.result.error == null)
             {
