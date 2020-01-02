@@ -1425,27 +1425,39 @@ namespace PosTicket.ViewModel
                 {
                     PrinterRepository printerRepository = new PrinterRepository();
                     //print receipt 
-                    linedata = new List<string>();
-                    linedata.Add("Produk          Qty     Price      Total");
-                    linedata.Add("garis");
-                    foreach (Cart Datajual in CartList)
-                    {
-                        linedata.Add(Datajual.name + "   " + Datajual.qty + "   " + Datajual.price + "    " + Datajual.total);
+                    ObservableCollection<Ticket> tiketdata = new ObservableCollection<Ticket>();
+                    
+                    for (int i=0; i <= 1; i++)
+                    { 
+                        linedata = new List<string>();
+                        linedata.Add("No. Nota : ");
+                        linedata.Add("Kasir : ");
+                        linedata.Add("garis");
+                        linedata.Add("Nama Produk");
+                        linedata.Add("Qty  X  Price         Total");
+                        linedata.Add("garis");
+                        foreach (Cart Datajual in CartList)
+                        {
+                            linedata.Add(Datajual.name);
+                            linedata.Add(Datajual.qty + "   X   "  + String.Format("{0:#,0}", Datajual.price) + "      " + String.Format("{0:#,0}", Datajual.total));
+                            if (Datajual.qty_bonus >0)
+                            {
+                                linedata.Add("Bonus Ticket : " + Datajual.qty_bonus);
+                            }
+                        }
+                        linedata.Add("garis");
+                        linedata.Add(" ");
+                        linedata.Add("Total Tiket : " + String.Format("{0:#,0}",_TotalTiket));
+                        linedata.Add("Total Transaksi : " + String.Format("{0:#,0}", _grandTotal));
+                        linedata.Add(" ");
+
+                        printerRepository.PrintReceipt(ConfigList[0].pos_printer, linedata);
                     }
-                    linedata.Add("garis");
-                    linedata.Add(" ");
-                    linedata.Add(" ");
-                    //linedata.Add( (char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
 
-                    //printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
-                    printerRepository.PrintReceipt(ConfigList[0].pos_printer, linedata);
-
+                    //open cash drawer
                     linedata = new List<string>();
-                    //linedata.Add("\x1b" + "\x69"); cut
                     linedata.Add((char)27 + "@" + (char)27 + "p" + (char)0 + ".}");
                     printerRepository.CetakReceiptLine(ConfigList[0].pos_printer, linedata);
-
-
                     await printerRepository.CetakTicket(ConfigList[0].ticket_printer, paymentResponse.result.tickets);
                     //close payment window
                     CartList.Clear();

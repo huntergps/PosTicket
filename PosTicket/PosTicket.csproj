@@ -7,7 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\NewPosMain.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Assets\login.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Views\NewPosMain.xaml" />
   </ItemGroup>
 
   <ItemGroup>

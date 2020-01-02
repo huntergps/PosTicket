@@ -145,7 +145,7 @@ namespace PosTicket.Repository.PrinterData
             return bSuccess;
         }
         public static bool SendStringToPrinter(string szPrinterName, string szString, string dataType)
-        {
+        4{
             IntPtr pBytes;
             Int32 dwCount;
             // How many characters are in the string?
@@ -175,6 +175,7 @@ namespace PosTicket.Repository.PrinterData
         public void CetakReceipt(List<string> data, Graphics graphics)
         {
             Font regular = new Font(FontFamily.GenericSansSerif, 10.0f, System.Drawing.FontStyle.Regular);
+            Font Smallfont = new Font(FontFamily.GenericSansSerif, 8.0f, System.Drawing.FontStyle.Regular);
             Font bold = new Font(FontFamily.GenericSansSerif, 14.0f, System.Drawing.FontStyle.Bold);
             graphics.DrawString("SALOKA THEME PARK", bold, Brushes.Black, 30, 10);
             graphics.DrawString("Jl.Fatmawati No.154, Gumuksari, Lopait", regular, Brushes.Black, 10, 40);
@@ -189,7 +190,7 @@ namespace PosTicket.Repository.PrinterData
                 }
                 else
                 {
-                    graphics.DrawString(data[i], regular, Brushes.Black, 10, 120 + i * 20);
+                    graphics.DrawString(data[i], Smallfont, Brushes.Black, 10, 120 + i * 20);
                 }
             }
             regular.Dispose();
@@ -220,15 +221,16 @@ namespace PosTicket.Repository.PrinterData
                 StringBuilder label = new StringBuilder();
                 label.AppendLine("^XA");
                 label.AppendLine("^POI");
-                label.AppendLine("^FO140,300^BY4^BQN,2,8^FDAM,A" + printer.barcode + "^FS ");
-                label.AppendLine("^FO105,485^ADN,12,12^FD" + printer.barcode + "^FS");
-                label.AppendLine("^FO140,510^ADN,12,12^FD" + printer.line1 + "^FS");
-                label.AppendLine("^FO140,535^ADN,12,12^FD" + printer.line2 + "^FS");
-                label.AppendLine("^FO140,560^ADN,12,12^FD" + printer.line3 + "^FS");
-                label.AppendLine("^FO420,450^ABB,5,10^FD" + printer.line4 + "^FS");
-                label.AppendLine("^FO10,480^ABB,5,10^FD" + printer.line5 + "^FS");
-                label.AppendLine("^FO30,615^ADN,12,8^FD" + printer.line6 + "^FS");
-                label.AppendLine("^XZ");
+                label.AppendLine("^FO15,300^BY4^BQN,2,8^FDAM,A" + printer.barcode + "^FS ");
+                label.AppendLine("^FO25,490^ADN,12,12^FD" + printer.barcode + "^FS");
+                label.AppendLine("^FO200,340^ADN,12,12^FD" + printer.line1 + "^FS");
+                label.AppendLine("^FO200,370^ADN,12,12^FD" + printer.line2 + "^FS");
+                label.AppendLine("^FO200,400^ADN,12,12^FD" + printer.line3 + "^FS");
+                label.AppendLine("^FO200,430^ADN,12,12^FD" + printer.line4 + "^FS");
+                label.AppendLine("^FO200,310^ADN,12,12^FD" + printer.line5 + "^FS");
+                label.AppendLine("^FO200,460^ADN,12,8^FD" + printer.line6 + "^FS");
+                label.AppendLine("^FB430,2,0,C,0^FO8,600^ADN,5,10^FDCeria Tiada Habisnya!^FS");
+                //label.AppendLine("^FO200,460^ADN,12,8^FD" + printer.line6 + "^FS");
                 if(SendStringToPrinter(printerName, label.ToString(), "RAW") == true)
                 {
                     await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "printed");
