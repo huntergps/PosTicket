@@ -1428,10 +1428,11 @@ namespace PosTicket.ViewModel
                     ObservableCollection<Ticket> tiketdata = new ObservableCollection<Ticket>();
                     
                     for (int i=0; i <= 1; i++)
-                    { 
+                    {
                         linedata = new List<string>();
-                        linedata.Add("No. Nota : ");
-                        linedata.Add("Kasir : ");
+                        linedata.Add("No. Nota : " + paymentResponse.result.so_name);
+                        linedata.Add("Tanggal Nota : " + DateTime.Now);
+                        linedata.Add("Kasir : " + paymentResponse.result.cashier);
                         linedata.Add("garis");
                         linedata.Add("Nama Produk");
                         linedata.Add("Qty  X  Price         Total");
