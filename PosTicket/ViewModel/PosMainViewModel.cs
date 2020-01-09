@@ -116,7 +116,7 @@ namespace PosTicket.ViewModel
 
             ReprintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("ReprintReceiptCommandButton"));
             FindReceiptCommand = new RelayCommand(o => FindReceiptClick());
-            PrintReceiptCommand = new RelayCommand(o => ReprintReceiptClick("PrintReceiptCommandButton"));
+            PrintReceiptCommand = new RelayCommand(o => PrintReceiptClick("PrintReceiptCommandButton"));
             CancelReprintReceiptCommand = new RelayCommand(o => CancelReprintReceiptClick("CancelReprintReceiptCommandButton"));
 
 
@@ -279,9 +279,21 @@ namespace PosTicket.ViewModel
                     }
                     
                 }
+                else
+                {
+                    MaterialMessageBox.ShowDialog(ProductPriceResponse.result.error.message, ProductPriceResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+                    return;
+                }
                 Dataindex += 1;
             }
-
+            namepelanggan = null;
+            salesname = null;
+            SelectedSalesPerson = null;
+            SelectedPelanggan = null;
+            RaisePropertyChanged("namepelanggan"); 
+            RaisePropertyChanged("SelectedPelanggan");
+            RaisePropertyChanged("SelectedSalesPerson");
+            RaisePropertyChanged("salesname");
             BayarList.Clear();
             BayarList.Add(new PayCart { id = 0, totaljual = _grandTotal, bayar = 0, reff = "", typebayar = "", rowpayment=0,AddReffToPayCartCommand=new RelayCommand (AddReffToPayCartClick), DelToPayCartCommand = new RelayCommand(DelToPayCartClick)});
             RaisePropertyChanged("BayarList");
@@ -350,12 +362,20 @@ namespace PosTicket.ViewModel
         public async void GetPaymentMethod()
         {
             PaymentMethod paymentMethod = await readPayment.GetPaymentMethodAsync();
-            foreach (PaymentData paymentData in paymentMethod.result)
+            if(paymentMethod.result[0].error != null)
             {
-                if (paymentData.AddToCartCommand == null)
-                    paymentData.AddToCartCommand = new RelayCommand(o => AddToPayCart(new PayCart { id = paymentData.id, totaljual = 0, bayar = 0, reff = paymentData.name, typebayar = paymentData.type }));
-                PaymentMethodList.Add(paymentData);
+                MaterialMessageBox.ShowDialog(paymentMethod.result[0].error.message, paymentMethod.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
             }
+            else
+            {
+                foreach (PaymentData paymentData in paymentMethod.result)
+                {
+                    if (paymentData.AddToCartCommand == null)
+                        paymentData.AddToCartCommand = new RelayCommand(o => AddToPayCart(new PayCart { id = paymentData.id, totaljual = 0, bayar = 0, reff = paymentData.name, typebayar = paymentData.type }));
+                    PaymentMethodList.Add(paymentData);
+                }
+            }
+            
         }
         private decimal _opening_cash_balance;
         public decimal opening_cash_balance 
@@ -413,7 +433,7 @@ namespace PosTicket.ViewModel
             get { return _count_ticket; }
             set
             {
-                _amount_sale = value;
+                _count_ticket = value;
                 RaisePropertyChanged("count_ticket");
             }
         }
@@ -771,6 +791,11 @@ namespace PosTicket.ViewModel
                             cartItem.product_price_id = ProductPriceResponse.result.product_price_id;
                             cartItem.price = ProductPriceResponse.result.price_unit;
                         }
+                        else
+                        {
+                            MaterialMessageBox.ShowDialog(ProductPriceResponse.result.error.message, ProductPriceResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+                            return;
+                        }
                         int index = Dataindex;
                         Cart temp = new Cart();
                         temp = cartItem;
@@ -798,6 +823,10 @@ namespace PosTicket.ViewModel
                         sender.qty_bonus = int.Parse(ProductPriceResponse.result.qty_bonus.ToString());
                         sender.product_price_id = ProductPriceResponse.result.product_price_id;
                         sender.price = ProductPriceResponse.result.price_unit;
+                    } else
+                    {
+                        MaterialMessageBox.ShowDialog(ProductPriceResponse.result.error.message, ProductPriceResponse.result.error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
+                        return;
                     }
                     CartList.Add(sender);
                 }
@@ -1040,6 +1069,7 @@ namespace PosTicket.ViewModel
                 {
                     SalesList.Add(ListsalesPerson);
                 }
+                RaisePropertyChanged("SalesList");
                 ViewSalesWindow.ShowDialog();
             } else
             {
@@ -1059,6 +1089,7 @@ namespace PosTicket.ViewModel
                 {
                     PelangganList.Add(ListdataPelanggan);
                 }
+                RaisePropertyChanged("PelangganList");
                 ViewCustomerWindow.ShowDialog();
             }
             else
@@ -1066,16 +1097,14 @@ namespace PosTicket.ViewModel
                 MaterialMessageBox.ShowDialog(Pelanggan.result[0].error.message, Pelanggan.result[0].error.code.ToString(), MessageBoxButton.OK, PackIconKind.Error, PrimaryColor.LightBlue);
             }
 
-
         }
         private void PilihSalesClick(object sender)
-        {
+        {   
             
             ViewSalesWindow.Hide();
         }
         private void PilihPelangganClick(object sender)
         {
-
             ViewCustomerWindow.Hide();
         }
         private void CancelSalesClick(object sender)
@@ -1092,6 +1121,35 @@ namespace PosTicket.ViewModel
         {
             PermisionWindow.ShowDialog();
         }
+        private void PrintReceiptClick(object sender)
+        {
+            linedata = new List<string>();
+            linedata.Add("No. Nota : " + numberReceipt);
+            //linedata.Add("Tanggal Nota : " + DateTime.Now);
+            //linedata.Add("Kasir : " + paymentResponse.result.cashier);
+            linedata.Add("garis");
+            linedata.Add("Nama Produk");
+            linedata.Add("Qty  X  Price         Total");
+            linedata.Add("garis");
+            int tottiket = 0;
+            float grandtot = 0;
+            foreach (ListReceiptResponse Datajual in ReceiptList)
+            {
+                linedata.Add(Datajual.name);
+                linedata.Add(Datajual.qty + "   X   " + String.Format("{0:#,0}", Datajual.price_unit) + "      " + String.Format("{0:#,0}", Datajual.amount_total));
+                tottiket += int.Parse(Datajual.qty.ToString());
+                grandtot +=float.Parse( Datajual.amount_total.ToString());
+            }
+            linedata.Add("garis");
+            linedata.Add(" ");
+            linedata.Add("Total Tiket : " + String.Format("{0:#,0}", tottiket));
+            linedata.Add("Total Transaksi : " + String.Format("{0:#,0}", grandtot));
+            linedata.Add(" ");
+            PrinterRepository printerRepository = new PrinterRepository();
+            printerRepository.PrintReceipt(ConfigList[0].pos_printer, linedata);
+            ReprintReceiptWindow.Hide();
+        }
+        
         private void ReprintTiketClick(object sender)
         {
             ReprintTiketWindow.ShowDialog();
@@ -1120,18 +1178,20 @@ namespace PosTicket.ViewModel
             linedata = new List<string>();
             linedata.Add("CLOSSING POS - " + ConfigList[0].current_ip);
             linedata.Add("garis");
-            linedata.Add("Opening Cash Balance : " + opening_cash_balance);
-            linedata.Add("Sale Cash Balance : " + amount_sale_cash);
-            linedata.Add("Total Cash Balance : " + (opening_cash_balance + amount_sale_cash));
+            linedata.Add("Opening Cash Balance : " + String.Format("{0:#,0}", opening_cash_balance));
+            linedata.Add("Sale Cash Balance : " + String.Format("{0:#,0}", amount_sale_cash));
+            linedata.Add("Total Cash Balance : " + String.Format("{0:#,0}", (opening_cash_balance + amount_sale_cash)));
             linedata.Add(" ");
-            linedata.Add("Sales Non Cash :" + amount_sale_non_cash);
+            linedata.Add("Sales Non Cash :" + String.Format("{0:#,0}", amount_sale_non_cash));
             linedata.Add(" ");
-            linedata.Add("Total Sales : " + amount_sale);
+            linedata.Add("Total Sales : " + String.Format("{0:#,0}", amount_sale));
+            linedata.Add(" ");
+            linedata.Add("Total Tiket : " + String.Format("{0:#,0}", count_ticket));
             linedata.Add(" ");
             linedata.Add("Total Tiket by Category : ");
             foreach (PosSessionSaleCategory datacategory in SumCategorylist)
             {
-                linedata.Add(datacategory.name + " : " + datacategory.sum );
+                linedata.Add(datacategory.name + " : " + String.Format("{0:#,0}", datacategory.sum ));
             }
             linedata.Add(" ");
             linedata.Add(" ");
@@ -1233,6 +1293,7 @@ namespace PosTicket.ViewModel
             {
                 _SelectedSalesPerson = value;
                 RaisePropertyChanged("SelectedSalesPerson");
+                RaisePropertyChanged("salesname");
             }
         }
         public string namepelanggan
@@ -1262,6 +1323,7 @@ namespace PosTicket.ViewModel
             {
                 _SelectedPelanggan = value;
                 RaisePropertyChanged("SelectedPelanggan");
+                RaisePropertyChanged("namepelanggan");
             }
         }
         private ListTicketResponse _SelectedTicketList;

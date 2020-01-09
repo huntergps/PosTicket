@@ -14,9 +14,19 @@ namespace PosTicket.Repository.WebService
         {
             RestClient client = WebServiceContext.GetUrl("/api/v2/payment_method");
             RestRequest request = WebServiceContext.GetRequestBody("get");
-
             IRestResponse response = await client.ExecuteTaskAsync(request);
-            PaymentMethod paymentMethodResponse = JsonConvert.DeserializeObject<PaymentMethod>(response.Content);
+            PaymentMethod paymentMethodResponse = new PaymentMethod();
+            List<PaymentData> resultdata  = new List<PaymentData>();
+            ErrorMessage errorMessage = new ErrorMessage();
+            if (response.ErrorMessage != null)
+            {
+                errorMessage.message = response.ErrorMessage;
+                errorMessage.code = 500;
+                resultdata[0].error = errorMessage;
+                paymentMethodResponse.result = resultdata;
+                return paymentMethodResponse;
+            }
+            paymentMethodResponse = JsonConvert.DeserializeObject<PaymentMethod>(response.Content);
             return paymentMethodResponse;
         }
         public async Task<PaymentTransactionResponse> PayTransactionAsync(PaymentTransactionRequest paymentTransactionRequest)

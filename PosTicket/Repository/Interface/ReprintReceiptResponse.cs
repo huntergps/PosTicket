@@ -12,8 +12,8 @@ namespace PosTicket.Repository.Interface
         public ErrorMessage error { get; set; }
         public int id { get; set; }
         public string name { get; set; }
-        public string qty { get; set; }
-        public string price_unit { get; set; }
-        public string amount_total { get; set; }
+        public float qty { get; set; }
+        public float price_unit { get; set; }
+        public float amount_total { get; set; }
     }
 }

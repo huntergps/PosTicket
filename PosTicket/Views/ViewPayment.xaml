@@ -9,7 +9,7 @@
         Title="ViewPayment" Height="800" Width="1000" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None">
     <Window.Resources>
         <DataTemplate x:Key="PaymentTemplate">
-            <Button Height="55" Margin="5 2 5 2" Command="{Binding AddToCartCommand}">
+            <Button Height="50" Margin="5 2 5 2" Command="{Binding AddToCartCommand}">
                 <TextBlock Text="{Binding name}"  />
             </Button>
         </DataTemplate>

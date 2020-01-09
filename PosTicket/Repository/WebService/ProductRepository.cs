@@ -35,7 +35,18 @@ namespace PosTicket.Repository.WebService
 
             request.AddParameter("application/json", JsonConvert.SerializeObject(productPriceRequest), ParameterType.RequestBody);
             IRestResponse response = await client.ExecuteTaskAsync(request);
-            ProductPrice productPriceResponse = JsonConvert.DeserializeObject<ProductPrice>(response.Content);
+            ProductPrice productPriceResponse = new ProductPrice();
+            ProductPriceData resultdata = new ProductPriceData();
+            ErrorMessage errorMessage = new ErrorMessage();
+            if (response.ErrorMessage != null)
+            {
+                errorMessage.message = response.ErrorMessage;
+                errorMessage.code = 500;
+                resultdata.error = errorMessage;
+                productPriceResponse.result = resultdata;
+                return productPriceResponse;
+            }
+            productPriceResponse = JsonConvert.DeserializeObject<ProductPrice>(response.Content);
             return productPriceResponse;
         }
     }

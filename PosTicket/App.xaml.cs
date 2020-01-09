@@ -6,6 +6,9 @@ using System.Windows;
 using PosTicket.Models;
 using PosTicket.Repository.SQLite;
 using static Dna.FrameworkDI;
+using System.Net.NetworkInformation;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PosTicket
 {
@@ -49,6 +52,18 @@ namespace PosTicket
             }
             Login loginWindow = new Login();
             loginWindow.Show();
+            //Thread thread = new Thread(()=>PingPong());
+            //thread.IsBackground = true;
+            //thread.Priority = ThreadPriority.Highest;
+            //thread.Start();
+        }
+        private void PingPong()
+        {
+            Ping pinger = new Ping();
+            while(true)
+            {
+                pinger.Send("10.154.32.3");
+            }
         }
     }
 }
