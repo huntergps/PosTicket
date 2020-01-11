@@ -21,5 +21,6 @@ namespace PosTicket.Views
         {
             InitializeComponent();
         }
+
     }
 }
