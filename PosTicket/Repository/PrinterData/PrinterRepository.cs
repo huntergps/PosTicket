@@ -219,19 +219,22 @@ namespace PosTicket.Repository.PrinterData
             foreach (Ticket printer in data)
             {
                 StringBuilder label = new StringBuilder();
-                label.AppendLine("^XA");
-                label.AppendLine("^POI");
-                label.AppendLine("^FO15,300^BY4^BQN,2,8^FDAM,A" + printer.barcode + "^FS ");
-                label.AppendLine("^FO25,490^ADN,12,12^FD" + printer.barcode + "^FS");
-                label.AppendLine("^FO200,430^ADN,12,12^FD" + printer.line1 + "^FS");
-                label.AppendLine("^FB250,3,0,L,0^FO200,340^ADN,12,12^FD" + printer.line2 + "^FS");
-                label.AppendLine("^FO200,400^ADN,12,12^FD" + printer.line3 + "^FS");
-                label.AppendLine("^FO200,460^ADN,12,12^FD" + printer.line4 + "^FS");
-                label.AppendLine("^FO200,310^ADN,12,12^FD" + printer.line5 + "^FS");
-                label.AppendLine("^FB430,2,0,C,0^FO8,540^ADN,5,10^FD" + printer.line6 + "^FS");
-                label.AppendLine("^FB430,2,0,C,0^FO8,600^ADN,5,10^FDCeria Tiada Habisnya!^FS");
-                label.AppendLine("^XZ");
-                //label.AppendLine("^FO200,460^ADN,12,8^FD" + printer.line6 + "^FS");
+                label.AppendLine("N");
+                label.AppendLine("ZT");
+                label.AppendLine("D10");
+                label.AppendLine("Q680,B24");
+                label.AppendLine("q440");
+                label.AppendLine("b30,300,P,380,800,x2,y11,l100,r100,f0,s5,\"" + printer.barcode + "\"");
+                label.AppendLine("A70,430,0,1,2,2,N,\"" + printer.barcode + "\"");
+                label.AppendLine("A30,470,0,1,1,1,N,\"" + printer.line1 + "\"");
+                label.AppendLine("A30,490,0,1,1,1,N,\"" + printer.line2 + "\"");
+                label.AppendLine("A30,510,0,1,1,1,N,\"" + printer.line3 + "\"");
+                label.AppendLine("A30,530,0,1,1,1,N,\"" + printer.line4 + " \"");
+                label.AppendLine("A30,550,0,1,1,1,N,\"" + printer.line5 + " \"");
+                label.AppendLine("A30,570,0,1,1,1,N,\"" + printer.line6 + " \"");
+                label.AppendLine("A100,620,0,1,1,1,N,\"Ceria Tiada Habisnya!\"");
+                label.AppendLine("ZT");
+                label.AppendLine("P1");
                 if (SendStringToPrinter(printerName, label.ToString(), "RAW") == true)
                 {
                     await UpdateStatus(printer.id, ConfigList[0].api_key, ConfigList[0].server_url, "printed");
